@@ -1,0 +1,29 @@
+[
+  {
+    "problem": 4,
+    "city": "Davis",
+    "task": "classification",
+    "labeled_fraction": 0.1,
+    "supervised_metric": 0.9334483526119657,
+    "ssl_metric": 0.9321550910105932,
+    "gain": -0.0012932616013724418
+  },
+  {
+    "problem": 4,
+    "city": "Davis",
+    "task": "classification",
+    "labeled_fraction": 0.3,
+    "supervised_metric": 0.9398397002071968,
+    "ssl_metric": 0.9399147936294248,
+    "gain": 7.509342222800086e-05
+  },
+  {
+    "problem": 4,
+    "city": "Davis",
+    "task": "classification",
+    "labeled_fraction": 0.5,
+    "supervised_metric": 0.944357278675136,
+    "ssl_metric": 0.9479719467567301,
+    "gain": 0.0036146680815941634
+  }
+]

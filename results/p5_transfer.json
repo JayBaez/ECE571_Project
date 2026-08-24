@@ -1,0 +1,65 @@
+[
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "zero_shot",
+    "rmse": 53.66355928045475,
+    "mae": 42.96779847771865,
+    "nrmse": 0.8807411653922872
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "few_shot_10",
+    "rmse": 41.24802028281041,
+    "mae": 36.975059777556446,
+    "nrmse": 0.6769739081999125
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "transfer_10",
+    "rmse": 24.81937335511452,
+    "mae": 19.090205760745285,
+    "nrmse": 0.4073424145955122
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "few_shot_50",
+    "rmse": 22.150381288180302,
+    "mae": 18.11793395827564,
+    "nrmse": 0.36353817918933445
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "transfer_50",
+    "rmse": 21.001121561944693,
+    "mae": 15.980572323152083,
+    "nrmse": 0.34467621095250467
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "few_shot_100",
+    "rmse": 19.346860907988233,
+    "mae": 14.655785486714981,
+    "nrmse": 0.31752602792767354
+  },
+  {
+    "problem": 5,
+    "source": "Davis",
+    "target": "Amherst",
+    "setup": "transfer_100",
+    "rmse": 20.360735159091774,
+    "mae": 14.568083702519155,
+    "nrmse": 0.33416601233145493
+  }
+]
