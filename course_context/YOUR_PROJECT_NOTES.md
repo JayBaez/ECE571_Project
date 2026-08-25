@@ -106,7 +106,50 @@ agents will read it when relevant but won't rewrite it wholesale.
 - Keep the AI-assistance disclosure paragraph updated as work happens,
   not written from memory at the end.
 
-## Notes About the Grading Rubric
+## Repository Architecture (added end of Phase 1)
+
+Beginner-friendly explanation of how the `src/` framework fits
+together — the pipeline flows in one direction, left to right:
+
+```
+Excel file (course/*.xlsx)
+    ↓  src/data_loader.py          — just reads the sheet, nothing else
+Raw DataFrame
+    ↓  src/preprocessing.py        — handle missing values
+    ↓  src/feature_engineering.py  — add Clear-Sky Index, time features, lags
+Cleaned + featured DataFrame
+    ↓  src/splitting.py            — chronological / cross-city / random-subset
+Train DataFrame, Test DataFrame
+    ↓  src/preprocessing.py again  — fit_scaler/fit_encoder on TRAIN ONLY,
+                                      then apply to both train and test
+Scaled, encoded train/test data
+    ↓  (a model — not built yet, this is Problem 1-5's job)
+Predictions
+    ↓  src/evaluation.py           — turn predictions into metrics (RMSE, F1, ...)
+    ↓  src/visualization.py        — turn predictions/metrics into saved plots
+    ↓  src/experiment_runner.py    — save_result() appends one row to
+                                      results/experiment_history.csv
+```
+
+**Why it's split into 8 small files instead of one big one:** each
+file does one job (loading data, OR cleaning it, OR splitting it, OR
+scoring it, OR plotting it). When I'm building Problem 2's code later
+and something's wrong with a metric, I know to look in
+`evaluation.py`, not hunt through a 2,000-line file.
+
+**The one rule that matters most:** anything that "learns" from data
+(a scaler, an encoder, a PCA, a model) gets `fit()` on training data
+only, then `apply()`/`transform()`/`predict()` on both train and test.
+Never fit on the combined or test-only data — that's the #1 leakage
+mistake called out throughout `EXPERIMENT_PLAN.md`.
+
+**What's still missing (on purpose):** there's no actual model code
+anywhere yet. `src/` only has the pipeline plumbing around a model —
+Problems 1-5 (in `problems/problemN_*/`) will each add their own
+model-specific code that plugs into this pipeline, rather than each
+problem reinventing data loading/splitting/evaluation from scratch.
+
+
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods
   (20) · Best metric/leaderboard (30) · Analysis & insight (20) · Report

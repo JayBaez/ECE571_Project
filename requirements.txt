@@ -1,0 +1,42 @@
+# Recommended Python version: 3.11 or 3.12
+#
+# Every package below is used by src/ or is needed for a method named
+# in course_context/ML_METHOD_MAP.md. Nothing speculative is included
+# yet - e.g. umap-learn (Problem 3, optional visualization) will be
+# added when Problem 3 actually needs it, not now.
+#
+# Versions below are minimum-compatible ranges, not exact pins to one
+# machine's install - exact pinning to a single sandbox environment's
+# versions would risk being hard to reproduce on a different machine.
+# For the project's REQUIRED reproducibility section
+# (course_context/TEACHER_EXPECTATIONS.md), run
+# `pip freeze > requirements-lock.txt` after setting up your real
+# environment and include that file's exact versions in the report.
+
+# Data handling
+pandas>=2.0
+numpy>=1.24
+openpyxl>=3.1        # required to read .xlsx files
+
+# Classical ML (Weeks 3-11: linear models, kNN, SVM, trees, ensembles,
+# Naive Bayes, k-means/GMM, PCA - see course_context/COURSE_CONTEXT.md)
+scikit-learn>=1.3
+scipy>=1.10
+
+# Deep learning (Weeks 13-15: MLP, RNN, LSTM/GRU - Problems 2, 3, 4)
+# NOTE: the default `pip install torch` may give you a CPU-only build.
+# For GPU acceleration on your RTX 2070, install the CUDA-enabled
+# build from https://pytorch.org/get-started/locally/ instead, using
+# the command it generates for your CUDA version.
+torch>=2.0
+
+# Plotting (all figures - src/visualization.py)
+matplotlib>=3.7
+seaborn>=0.12
+
+# Configuration files (src/experiment_runner.py)
+PyYAML>=6.0
+
+# Progress bars for longer training loops (readability, not required
+# for correctness - safe to remove if you'd rather not use it)
+tqdm>=4.65

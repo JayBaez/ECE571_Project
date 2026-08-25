@@ -6,7 +6,7 @@ entries short — status + one-line note, not a log of everything done.**
 
 ```
 Phase 0 — Course material & spec analysis: COMPLETE
-Phase 1 — Repository construction:          NOT STARTED
+Phase 1 — Repository construction:          COMPLETE
 Phase 2 — ML framework:                     NOT STARTED
 Phase 3 — Dataset validation (code-level):  NOT STARTED
 Problem 1 (Classification):                 NOT STARTED
@@ -19,7 +19,19 @@ Report:                                     NOT STARTED
 Video presentation:                         NOT STARTED
 ```
 
-## Phase 0 summary (this stage)
+## Phase 1 summary (this stage)
+
+- Built the repository foundation: `src/` (8 reusable modules),
+  `configs/`, `problems/` (5 placeholder folders), `results/` (schema
+  only, no data), `models/`, `figures/`, `logs/`, `data/`,
+  `requirements.txt`, `.gitignore`, `README.md`, `scripts/check_setup.py`.
+- All 8 `src/` modules were smoke-tested against the real dataset
+  (loading, splitting, scaling, encoding, feature engineering,
+  metrics, plotting, config loading, result logging) — see the Phase 1
+  report given to the project owner for the full validation output.
+- **No ML models were trained. No problem-specific code was written.
+  `results/experiment_history.csv` and `results/leaderboard.csv`
+  contain headers only — zero real rows.**
 
 - Read all 19 course files (18 PDF + 1 pptx) and the real project spec
   document → `COURSE_CONTEXT.md`, `TEACHER_EXPECTATIONS.md`.

@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Large generated artifacts - keep the folder (via .gitkeep) but not
+# every trained model checkpoint or cached data file, so the repo
+# doesn't balloon in size. Result CSVs (results/*.csv) are NOT
+# ignored - those are small and are exactly what needs to be tracked
+# for reproducibility.
+data/*.parquet
+data/*.csv
+models/*.pt
+models/*.pth
+models/*.pkl
+models/*.joblib
+
+# Keep .gitkeep placeholders even though the patterns above would
+# otherwise leave their folders looking empty to Git
+!**/.gitkeep

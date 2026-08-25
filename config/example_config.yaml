@@ -1,0 +1,18 @@
+# Example experiment configuration.
+#
+# This is a harmless, illustrative example only - it does not
+# correspond to any experiment that has actually been run. Per-problem
+# config files (e.g. configs/problem2_davis_random_forest.yaml) will
+# be added when each problem is implemented, following this same
+# shape. See course_context/EXPERIMENT_PLAN.md for the planned
+# experiments this will eventually configure.
+
+problem: problem2_regression
+model: random_forest
+city: Davis
+sheet: "Davis 5hr-daily '11-'16"
+target: "Output Power"
+split_type: chronological
+train_fraction: 0.8
+seed: 42
+notes: "Example config only - not yet used by any runnable script."
