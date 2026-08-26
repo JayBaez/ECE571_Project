@@ -214,5 +214,4 @@ This repo is managed with GitHub Desktop. After AI-assisted changes
 in GitHub Desktop before committing — that's the right point to catch
 anything you don't understand or agree with. Commit messages should
 briefly describe what phase/problem the change belongs to. AI agents
-working in this repo are instructed not to commit or push on their own
-— see `course_context/AI_AGENT_INSTRUCTIONS.md`.
+working in this repo are instructed not to commit or push on their own — see `course_context/AI_AGENT_INSTRUCTIONS.md`.
