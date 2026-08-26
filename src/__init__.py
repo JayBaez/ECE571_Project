@@ -8,10 +8,12 @@ problem will use these modules.
 Modules:
     utils               - random seeds, GPU device detection, small helpers.
     data_loader          - load the Excel dataset into DataFrames.
-    preprocessing         - missing values, scaling, categorical encoding.
+    cleaning              - detect/report missing values, duplicates, anomalies.
+    preprocessing         - feature/target separation, scaling, categorical encoding.
     feature_engineering   - Clear-Sky Index, time encodings, lag features.
     splitting             - chronological, cross-city, and random-subset splits.
-    evaluation            - classification and regression metrics.
+    evaluation            - classification and regression metrics, multi-seed aggregation.
     visualization          - plots, always saved to file.
-    experiment_runner      - config loading and result logging.
+    experiment_runner      - config loading, experiment IDs, results/leaderboard.
+    torch_utils            - generic PyTorch training loop (any nn.Module).
 """

@@ -75,14 +75,20 @@ def add_clear_sky_index(df: pd.DataFrame) -> pd.DataFrame:
 
 def add_time_cyclical_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Add sine/cosine encodings of time-of-day and day-of-year.
+    Add sine/cosine encodings of time-of-day, month, and day-of-year.
 
     ML concept: Hour 23 and Hour 0 are only 1 hour apart, but as plain
     numbers they look 23 apart - a model would wrongly think they're
     very different. Sine/cosine encoding fixes this by mapping cyclical
     values onto a circle, so "close in time" always means "close in
-    the encoded features" too. Same idea for day-of-year (Dec 31 and
+    the encoded features" too. Same idea for Month (December and
+    January are 1 month apart, not 11) and day-of-year (Dec 31 and
     Jan 1 are 1 day apart, not 364).
+
+    Month and day-of-year both capture "time of year," just at
+    different resolutions - day-of-year is finer-grained and mostly
+    makes Month_sin/Month_cos redundant, but Month is included too
+    since a simpler model might prefer the coarser signal.
 
     Parameters
     ----------
@@ -92,14 +98,17 @@ def add_time_cyclical_features(df: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pandas.DataFrame
-        A copy of `df` with four new columns: "Hour_sin", "Hour_cos",
-        "DayOfYear_sin", "DayOfYear_cos".
+        A copy of `df` with six new columns: "Hour_sin", "Hour_cos",
+        "Month_sin", "Month_cos", "DayOfYear_sin", "DayOfYear_cos".
     """
     df = df.copy()
 
     fractional_hour = df["Hour"] + df["Minute"] / 60.0
     df["Hour_sin"] = np.sin(2 * np.pi * fractional_hour / 24.0)
     df["Hour_cos"] = np.cos(2 * np.pi * fractional_hour / 24.0)
+
+    df["Month_sin"] = np.sin(2 * np.pi * df["Month"] / 12.0)
+    df["Month_cos"] = np.cos(2 * np.pi * df["Month"] / 12.0)
 
     timestamps = pd.to_datetime(dict(year=df["Year"], month=df["Month"], day=df["Day"]))
     day_of_year = timestamps.dt.dayofyear

@@ -149,7 +149,68 @@ Problems 1-5 (in `problems/problemN_*/`) will each add their own
 model-specific code that plugs into this pipeline, rather than each
 problem reinventing data loading/splitting/evaluation from scratch.
 
+## Framework Architecture (added end of Phase 2)
 
+Phase 2 filled in the "plumbing around a model" mentioned above.
+Beginner-friendly summary of what's new:
+
+**Two new files:**
+- `src/cleaning.py` — detects and reports missing values, duplicate
+  rows, and physically-suspicious values (e.g. negative irradiance),
+  and prints a report like "Rows before: 180 / Missing Output Power: 4
+  / Rows remaining: 180" so cleaning never happens silently.
+- `src/torch_utils.py` — a generic training loop for PyTorch models
+  (any of them — MLP, LSTM, GRU, autoencoder, whatever gets built in
+  Problems 1-5). Handles batching, early stopping (stop once
+  validation loss stops improving), and checkpointing (save the best
+  version of the model seen so far). No actual neural network is
+  defined yet — this file just knows how to *train* one once it
+  exists.
+
+**How an experiment will eventually be configured and saved:**
+```
+configs/my_experiment.yaml   (problem, model, seed, feature toggles, split type)
+        ↓  experiment_runner.load_config()
+config dict
+        ↓  (load data, clean, engineer features, split, preprocess, train — as before)
+metrics dict
+        ↓  experiment_runner.create_experiment_dir()
+results/problemN/EXPERIMENT_ID/
+    metrics.json        ← the actual numbers
+    config.yaml          ← exactly what was run
+    predictions.csv       ← every prediction, for later re-plotting
+    training_log.csv       ← per-epoch loss, if it was a neural net
+        ↓  experiment_runner.save_result()
+results/experiment_history.csv   ← one summary row added, others preserved
+```
+
+**How I'll find "what's the best result so far":** rather than a
+separate `leaderboard.csv` file that could quietly get out of sync,
+`experiment_runner.get_leaderboard(metric="rmse")` reads the always-
+current `experiment_history.csv` and sorts it correctly — it knows
+RMSE should sort low-to-high but balanced accuracy should sort
+high-to-low, so I don't have to remember that myself.
+
+**Multi-seed reporting:** `evaluation.aggregate_across_seeds()` takes
+a list of metrics dicts (one per seed) and returns mean/std for each
+metric, keeping every individual seed's number too — this is what
+produces the "mean ± std over 3 seeds" the spec requires for Problem 2.
+
+**City-scale differences (Davis vs. everyone else):** if a cross-city
+or transfer experiment needs to combine cities with very different
+Output Power scales, `preprocessing.fit_target_scaler()` /
+`apply_target_scaler()` / `inverse_transform_target()` standardize the
+target for training and convert predictions back to real kW before
+computing RMSE/MAE — I only need this for cross-city work, not
+same-city experiments.
+
+**The framework demo:** `scripts/framework_demo.py` runs the *entire*
+pipeline above on a small made-up dataset with a plain Linear
+Regression model, just to prove all the pieces fit together. Its
+output lives in `results/framework_demo/` and `figures/framework_demo/`
+— never mix these up with real Problem 1-5 results.
+
+## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods
   (20) · Best metric/leaderboard (30) · Analysis & insight (20) · Report

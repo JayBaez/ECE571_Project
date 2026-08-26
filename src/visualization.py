@@ -17,9 +17,13 @@ confusion matrix needs a heatmap and axis labels made from class
 names, not just a line).
 """
 
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+
+from src.utils import ensure_dir
 
 _STYLE_APPLIED = False
 
@@ -34,6 +38,34 @@ def set_plot_style() -> None:
         sns.set_theme(style="whitegrid", palette="deep")
         plt.rcParams["figure.dpi"] = 100
         _STYLE_APPLIED = True
+
+
+def build_figure_path(problem: str, experiment_id: str, filename: str, base_dir: str = "figures") -> str:
+    """
+    Build a save path for a figure that (a) lives in the right
+    per-problem folder and (b) includes the experiment ID in the
+    filename, so re-running an experiment never silently overwrites a
+    previous run's figure.
+
+    Parameters
+    ----------
+    problem : str
+        e.g. "problem2", or "framework_demo" for the Phase 2 demo.
+    experiment_id : str
+        From experiment_runner.generate_experiment_id().
+    filename : str
+        A short description of the figure, e.g. "confusion_matrix.png".
+    base_dir : str
+        Root figures folder. Default "figures".
+
+    Returns
+    -------
+    str
+        e.g. "figures/problem2/P2_Davis_random_forest_seed42_.../confusion_matrix.png"
+        The directory is created if it doesn't exist yet.
+    """
+    directory = ensure_dir(os.path.join(base_dir, problem, experiment_id))
+    return os.path.join(directory, filename)
 
 
 def plot_confusion_matrix(cm: np.ndarray, labels: list, save_path: str, title: str = "Confusion Matrix") -> str:
@@ -62,6 +94,8 @@ def plot_confusion_matrix(cm: np.ndarray, labels: list, save_path: str, title: s
     ax.set_ylabel("True label")
     ax.set_title(title)
     fig.tight_layout()
+    if os.path.dirname(save_path):
+        ensure_dir(os.path.dirname(save_path))
     fig.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
     return save_path
@@ -100,6 +134,8 @@ def plot_prediction_vs_truth(y_true, y_pred, save_path: str, title: str = "Predi
     ax.set_title(title)
     ax.legend()
     fig.tight_layout()
+    if os.path.dirname(save_path):
+        ensure_dir(os.path.dirname(save_path))
     fig.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
     return save_path
@@ -135,6 +171,8 @@ def plot_residuals(y_true, y_pred, save_path: str, title: str = "Residuals") -> 
     ax.set_ylabel("Residual (true - predicted)")
     ax.set_title(title)
     fig.tight_layout()
+    if os.path.dirname(save_path):
+        ensure_dir(os.path.dirname(save_path))
     fig.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
     return save_path
@@ -184,6 +222,8 @@ def plot_metric_curve(
     if series_label:
         ax.legend()
     fig.tight_layout()
+    if os.path.dirname(save_path):
+        ensure_dir(os.path.dirname(save_path))
     fig.savefig(save_path, bbox_inches="tight")
     plt.close(fig)
     return save_path

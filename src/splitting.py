@@ -50,9 +50,17 @@ def chronological_split(df: pd.DataFrame, train_frac: float = 0.8) -> tuple:
 
     Returns
     -------
-    (train_df, test_df) : tuple of pandas.DataFrame
-        train_df is the earlier `train_frac` portion, test_df is the
-        remaining later portion.
+    (train_df, test_df, split_info) : tuple
+        train_df, test_df : pandas.DataFrame
+            train_df is the earlier `train_frac` portion, test_df is
+            the remaining later portion.
+        split_info : dict
+            {"train_frac", "split_index", "n_train", "n_test",
+             "last_train_timestamp", "first_test_timestamp"} -
+            save this alongside an experiment's results so the exact
+            split point can be reported/reproduced (the project spec
+            requires split indices to be documented - see
+            course_context/TEACHER_EXPECTATIONS.md).
 
     Raises
     ------
@@ -62,12 +70,49 @@ def chronological_split(df: pd.DataFrame, train_frac: float = 0.8) -> tuple:
     if not (0.0 < train_frac < 1.0):
         raise ValueError(f"train_frac must be between 0 and 1, got {train_frac}")
 
-    df_sorted = df.sort_values(["Year", "Month", "Day", "Hour", "Minute"]).reset_index(drop=True)
+    time_cols = ["Year", "Month", "Day", "Hour", "Minute"]
+    df_sorted = df.sort_values(time_cols).reset_index(drop=True)
     split_index = int(len(df_sorted) * train_frac)
 
     train_df = df_sorted.iloc[:split_index].copy()
     test_df = df_sorted.iloc[split_index:].copy()
-    return train_df, test_df
+
+    split_info = {
+        "train_frac": train_frac,
+        "split_index": split_index,
+        "n_train": len(train_df),
+        "n_test": len(test_df),
+        "last_train_timestamp": tuple(train_df[time_cols].iloc[-1]) if len(train_df) else None,
+        "first_test_timestamp": tuple(test_df[time_cols].iloc[0]) if len(test_df) else None,
+    }
+    return train_df, test_df, split_info
+
+
+def verify_no_overlap(df_a: pd.DataFrame, df_b: pd.DataFrame, key_columns: list = None) -> bool:
+    """
+    Check that two DataFrames share zero rows, based on a set of key
+    columns (defaults to the timestamp columns). Useful as a sanity
+    check right after any split - chronological, cross-city, or
+    labeled/unlabeled - to confirm there's genuinely no leakage between
+    the two halves.
+
+    Parameters
+    ----------
+    df_a, df_b : pandas.DataFrame
+    key_columns : list of str, optional
+        Columns that together identify a row (default: Year, Month,
+        Day, Hour, Minute).
+
+    Returns
+    -------
+    bool
+        True if there is no overlap, False if at least one matching
+        row was found in both DataFrames.
+    """
+    key_columns = key_columns or ["Year", "Month", "Day", "Hour", "Minute"]
+    keys_a = set(map(tuple, df_a[key_columns].values.tolist()))
+    keys_b = set(map(tuple, df_b[key_columns].values.tolist()))
+    return len(keys_a & keys_b) == 0
 
 
 def cross_city_split(

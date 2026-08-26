@@ -54,16 +54,18 @@ def main():
     # --- src/ module imports ---
     def _import_src_modules():
         from src import (  # noqa: F401
+            cleaning,
             data_loader,
             evaluation,
             experiment_runner,
             feature_engineering,
             preprocessing,
             splitting,
+            torch_utils,
             utils,
             visualization,
         )
-        return "all 8 src/ modules import OK"
+        return "all 10 src/ modules import OK"
 
     results.append(check("src/ module imports", _import_src_modules))
 

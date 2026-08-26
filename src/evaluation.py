@@ -41,6 +41,60 @@ REGRESSION_METRIC_DIRECTION = {
 }
 
 
+def aggregate_across_seeds(metric_dicts: list) -> dict:
+    """
+    Combine metric results from several random seeds into mean/std
+    summaries, while keeping every individual seed's numbers too.
+
+    ML concept / why this matters: a single run's score can look good
+    or bad partly by chance (e.g. a lucky train/test split of
+    mini-batches, or a lucky weight initialization). Running the same
+    experiment with several different seeds and reporting mean ± std
+    shows how much the result actually varies - the project spec
+    requires this for regression results (at least 3 seeds - see
+    course_context/TEACHER_EXPECTATIONS.md, and utils.DEFAULT_SEEDS).
+
+    Parameters
+    ----------
+    metric_dicts : list of dict
+        One metrics dict per seed, e.g. [regression_metrics(...) for
+        seed_1, regression_metrics(...) for seed_2, ...]. Every dict
+        must have the same keys.
+
+    Returns
+    -------
+    dict
+        {metric_name: {"mean": float, "std": float, "values": [...]}}
+        for every metric key found in the input dicts.
+
+    Raises
+    ------
+    ValueError
+        If `metric_dicts` is empty, or if the dicts don't all share
+        the same metric keys.
+    """
+    if not metric_dicts:
+        raise ValueError("aggregate_across_seeds() needs at least one metrics dict.")
+
+    keys = set(metric_dicts[0].keys())
+    for d in metric_dicts:
+        if set(d.keys()) != keys:
+            raise ValueError(
+                "All metric dicts must have the same keys to aggregate them - "
+                f"got {set(d.keys())} and {keys}."
+            )
+
+    result = {}
+    for key in keys:
+        values = [d[key] for d in metric_dicts]
+        result[key] = {
+            "mean": float(np.mean(values)),
+            "std": float(np.std(values)),
+            "values": values,
+        }
+    return result
+
+
 def classification_metrics(y_true, y_pred) -> dict:
     """
     Compute standard classification metrics.
@@ -110,12 +164,32 @@ def regression_metrics(y_true, y_pred, normalization: str = "range") -> dict:
     project spec requires (course_context/TEACHER_EXPECTATIONS.md,
     Problem 2).
 
+    IMPORTANT - nRMSE definition is a DELIBERATE CHOICE, not a spec
+    requirement: the real project spec says to "always report RMSE
+    together with nRMSE" but never defines exactly how to normalize it
+    - this is genuinely ambiguous in the spec. This framework defaults
+    to RANGE normalization (dividing by max(y_true) - min(y_true)),
+    which is one of the two common conventions for nRMSE in
+    forecasting literature (the other being MEAN normalization,
+    available via `normalization="mean"`). Whichever one you use,
+    use the SAME definition consistently across every Problem 2
+    experiment, and state your choice explicitly in the report - don't
+    let this be an unstated detail.
+
+    IMPORTANT - always pass ORIGINAL (kW) scale values here, never
+    values still in a standardized/scaled space: if you used
+    preprocessing.fit_target_scaler() for a cross-city experiment,
+    call preprocessing.inverse_transform_target() on both y_true and
+    y_pred BEFORE calling this function. Otherwise RMSE/MAE/nRMSE end
+    up in "standard deviations," not kW, which isn't interpretable and
+    isn't what the spec asks for.
+
     Parameters
     ----------
     y_true : array-like
-        Ground-truth continuous values.
+        Ground-truth continuous values, in the ORIGINAL (kW) scale.
     y_pred : array-like
-        Predicted continuous values.
+        Predicted continuous values, in the ORIGINAL (kW) scale.
     normalization : str
         How to normalize RMSE into nRMSE:
         - "range" (default): divide by (max(y_true) - min(y_true)).
