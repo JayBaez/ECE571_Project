@@ -183,6 +183,95 @@ def load_sheet(sheet_name: str, path: str = None) -> pd.DataFrame:
     return df
 
 
+def get_sheet_name(city: str, years: str = "long", path: str = None) -> str:
+    """
+    Find the exact sheet name for a given city, without needing to
+    remember or hard-code the exact spelling (e.g. "Snt.Barb").
+
+    This works by reading the real sheet list and using
+    parse_sheet_name() on each one - it doesn't keep its own separate
+    table of sheet names, so it can't drift out of sync with the
+    actual workbook.
+
+    Parameters
+    ----------
+    city : str
+        City name, e.g. "Davis", "Santa Barbara", "Amherst". Matching
+        is case-insensitive.
+    years : str
+        "long" (default) - the sheet covering the most years for this
+            city (e.g. Davis's 2011-2016 sheet).
+        "short" - the sheet covering fewer years, if a shorter
+            alternative exists for this city (e.g. Davis's 2014-2016
+            sheet). For a city with only one sheet (Amherst), "short"
+            and "long" both return that same sheet - there's no
+            special-casing needed for that.
+    path : str, optional
+        Path to the .xlsx file. Defaults to DEFAULT_DATA_PATH.
+
+    Returns
+    -------
+    str
+        The exact sheet name to pass to load_sheet().
+
+    Raises
+    ------
+    ValueError
+        If no sheet matches `city`, or if `years` isn't "long" or "short".
+    """
+    if years not in ("long", "short"):
+        raise ValueError(f"years must be 'long' or 'short', got '{years}'")
+
+    sheets = list_sheets(path)
+    matches = []
+    for sheet_name in sheets:
+        meta = parse_sheet_name(sheet_name)
+        if meta["city"].lower() == city.lower():
+            span = (
+                meta["year_end"] - meta["year_start"]
+                if meta["year_start"] is not None
+                else 0
+            )
+            matches.append((sheet_name, span))
+
+    if not matches:
+        known_cities = sorted({parse_sheet_name(s)["city"] for s in sheets})
+        raise ValueError(
+            f"No sheet found for city '{city}'. Known cities: {known_cities}"
+        )
+
+    # Sort by year span ascending, so index 0 is the shortest sheet and
+    # -1 is the longest. If there's only one match, both "short" and
+    # "long" naturally return that same sheet.
+    matches.sort(key=lambda pair: pair[1])
+    return matches[0][0] if years == "short" else matches[-1][0]
+
+
+def load_city(city: str, years: str = "long", path: str = None) -> pd.DataFrame:
+    """
+    Load a city's data by name, without needing to know the exact
+    sheet name spelling.
+
+    Parameters
+    ----------
+    city : str
+        e.g. "Davis", "Santa Barbara", "Amherst".
+    years : str
+        "long" (default) or "short" - see get_sheet_name() for what
+        these mean.
+    path : str, optional
+        Path to the .xlsx file. Defaults to DEFAULT_DATA_PATH.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Same as load_sheet() - raw data, with city/year metadata in
+        `df.attrs`.
+    """
+    sheet_name = get_sheet_name(city, years=years, path=path)
+    return load_sheet(sheet_name, path=path)
+
+
 def load_multiple_sheets(sheet_names: list, path: str = None) -> dict:
     """
     Load several sheets at once.
