@@ -1,0 +1,6 @@
+city,date_range_start,date_range_end,expected_calendar_days,missing_calendar_days,rows_per_day_min,rows_per_day_max
+Amherst,2018-01-01,2020-12-31,1096,0,11,11
+Davis,2011-01-01,2016-12-31,2192,0,11,11
+Huron,2011-01-01,2016-12-31,2192,0,11,11
+Santa Barbara,2011-01-01,2016-12-31,2192,0,11,11
+La Jolla,2011-01-01,2016-12-31,2192,0,11,11

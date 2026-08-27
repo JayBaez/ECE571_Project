@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Phase 2 completion (ML framework build + validation).
+**Last updated:** Phase 3 completion (dataset validation + EDA).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -8,7 +8,7 @@ entries short — status + one-line note, not a log of everything done.**
 Phase 0 — Course material & spec analysis: COMPLETE
 Phase 1 — Repository construction:          COMPLETE
 Phase 2 — ML framework:                     COMPLETE
-Phase 3 — Dataset validation (code-level):  NOT STARTED
+Phase 3 — Dataset validation:                COMPLETE
 Problem 1 (Classification):                 NOT STARTED
 Problem 2 (Regression):                     NOT STARTED
 Problem 3 (Dimension Reduction):            NOT STARTED
@@ -19,7 +19,39 @@ Report:                                     NOT STARTED
 Video presentation:                         NOT STARTED
 ```
 
-## Phase 2 summary (this stage)
+## Phase 3 summary (this stage)
+
+- Built `scripts/run_eda.py`: a reusable, re-runnable EDA script
+  covering all 34 requested analysis areas — sheet/column/dtype
+  verification, missing values, duplicates, timestamp validation,
+  Output Power distributions, irradiance relationships, Clear-Sky
+  Index, Cloud Type, weather features, correlations, target-scale
+  analysis, class-imbalance preview, and autocorrelation. Never
+  modifies the raw Excel file (verified: file checksum unchanged
+  after every run).
+- Saved 19 tables to `results/eda/*.csv` and 11 figures to
+  `figures/eda/*.png`.
+- **Found one previously-undocumented, genuine data-quality issue:**
+  `Relative Humidity`/`Wind Direction` appear swapped and/or
+  mis-unitted for all of Davis 2013 and all of Huron 2012 (~14% of
+  each city's data) — see `course_context/EDA_REPORT.md` and
+  `DATASET_PROFILE.md`.
+- Found and fixed a real internal contradiction in
+  `DATASET_PROFILE.md` left over from Phase 0/1: its "Recommended
+  defaults" section still said to skip the redundant `'14-'16` sheets,
+  directly contradicting the correction earlier in the same file
+  (which says both sheets are needed for the spec's 3yr-vs-6yr
+  ablation). Fixed and now internally consistent.
+- Created `course_context/LEAKAGE_MAP.md` (per-problem feature safety
+  rules) and `course_context/EDA_REPORT.md` (full technical findings).
+- Updated `DATASET_PROFILE.md` throughout with explicit
+  [SPECIFIED]/[VERIFIED] labels per section, per this phase's
+  instruction not to let an assumption pass as a fact.
+- **No ML models were trained. No problem-specific code was written.
+  No modeling decisions (final classifier, regressor, SSL algorithm,
+  transfer strategy) were locked in.**
+
+## Phase 2 summary
 
 - Extended the Phase 1 framework into a full reusable ML
   experimentation system: 2 new modules (`cleaning.py`, `torch_utils.py`),
@@ -75,11 +107,14 @@ Video presentation:                         NOT STARTED
 - **No code had been written. No models had been trained. No metrics
   existed yet anywhere in the project.**
 
-## Known open item
+## Known open items
 
 - Problem 4's SSL algorithm choice (course-taught vs. pseudo-labeling)
   is still undecided — see `TEACHER_EXPECTATIONS.md`'s final section and
   `YOUR_PROJECT_NOTES.md`.
+- The Davis-2013/Huron-2012 Relative Humidity/Wind Direction anomaly
+  found in Phase 3 (see `EDA_REPORT.md`) needs a decision before any
+  problem uses those two columns for those city-years.
 
 ## Context on repository history
 

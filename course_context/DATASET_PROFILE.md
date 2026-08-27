@@ -4,7 +4,18 @@
 All numbers below come from directly loading the workbook with
 pandas/openpyxl and computing them — nothing here is assumed or guessed.
 
-## Sheets (9 total, 5 distinct cities)
+**Specified vs. Verified — read this first.** Every factual claim in
+this file is now labeled as one of:
+- **[SPECIFIED]** — stated in the written project spec, not
+  independently re-derived here.
+- **[VERIFIED]** — directly computed from the actual workbook, in this
+  file's original Phase 0 pass and/or re-confirmed programmatically in
+  Phase 3's `scripts/run_eda.py` (see `course_context/EDA_REPORT.md`
+  for the full Phase 3 analysis this file summarizes the dataset-level
+  facts from). Where a spec claim and a verified number differ, both
+  are shown, and the verified number is what the code should trust.
+
+## Sheets (9 total, 5 distinct cities) — [VERIFIED]
 
 | Sheet name | City | Years | Rows | Notes |
 |---|---|---|---|---|
@@ -41,7 +52,7 @@ source and target on the *same* calendar dates/seasons — any cross-city or
 transfer comparison is implicitly also a cross-time-period comparison, and
 should be described that way rather than assumed to be climate-only.
 
-## Columns (22, identical across all 9 sheets)
+## Columns (22, identical across all 9 sheets) — [VERIFIED]
 
 `Year, Month, Day, Hour, Minute, DHI, DNI, GHI, Clearsky DHI, Clearsky DNI,
 Clearsky GHI, Cloud Type, Dew Point, Solar Zenith Angle, Surface Albedo,
@@ -80,7 +91,7 @@ observed in this data.) `0` (Clear) is by far the most common value in
 every sheet (roughly 55–65% of rows). This column is the natural basis for
 a Problem 1 "sky condition" classification target.
 
-## Sampling structure ("5hr-daily")
+## Sampling structure ("5hr-daily") — [VERIFIED]
 
 Every sheet samples **11 timestamps per calendar day**: `Hour` in
 `{10, 11, 12, 13, 14, 15}` crossed with `Minute` in `{0, 30}`, minus the
@@ -103,7 +114,7 @@ on (e.g., don't hard-code a 14:30 cutoff) — the "~4,019 rows"
 approximation is fine to use loosely, but the literal "10:00 to ~14:30"
 description undercounts the real window by about an hour.
 
-## Missing values
+## Missing values — [VERIFIED, re-confirmed in Phase 3]
 
 Essentially none. The only missing data in the entire workbook is **4 rows
 in the Amherst sheet**: `Output Power` is `NaN` for 2020-07-06, hours
@@ -113,7 +124,7 @@ missing. Worth a short imputation/drop decision when this row range is
 encountered, and worth noting in the report as the one genuine missing-data
 gap in the dataset.
 
-## A real (non-obvious) data-quality anomaly: 2012-03-22
+## A real (non-obvious) data-quality anomaly: 2012-03-22 — [VERIFIED]
 
 On **March 22, 2012**, all 11 daytime readings show `Output Power = 0`
 simultaneously across **all four** of Davis, Huron, Santa Barbara, and La
@@ -141,9 +152,30 @@ Negative values in `Temperature` and `Dew Point` (both in Celsius) are
 common across all sheets in winter months — this is expected and **not** a
 data-quality issue.
 
-## Output Power ranges by city (this matters for cross-city work)
+## A second real, non-obvious data-quality anomaly: Relative Humidity / Wind Direction swap — [VERIFIED, found in Phase 3]
 
-Per the actual spec, `Output Power` is in **kW**.
+`Relative Humidity` shows values above 100% (up to 360) in a subset of
+rows. Investigated properly rather than dismissed as noise (full
+analysis: `course_context/EDA_REPORT.md`) — the pattern is clean and
+isolated:
+
+| City | Affected rows | % of city | Affected year(s) |
+|---|---|---|---|
+| Davis | 3,480 | 14.4% | **2013 only** |
+| Huron | 3,287 | 13.6% | **2012 only** |
+
+In these rows, `Relative Humidity` reaches up to 360 (exactly
+`Wind Direction`'s normal 0–360° range), while `Wind Direction` itself
+sits under ~4.5 (consistent with radians, or some other non-degree
+unit — nowhere near its normal 0–360° range in every other year).
+This strongly suggests the two columns were swapped and/or recorded in
+a different unit for exactly these two city-years. Not corrected here
+— see `course_context/EDA_REPORT.md`'s "Decisions That Need To Be Made
+Later" for the options.
+
+## Output Power ranges by city (this matters for cross-city work) — [VERIFIED, cross-checked against SPECIFIED values]
+
+Per the actual spec, `Output Power` is in **kW**. — [SPECIFIED]
 
 | City | Mean (kW) | Std (kW) | Min (kW) | Max (kW) |
 |---|---|---|---|---|
@@ -172,17 +204,30 @@ for cross-city regression comparisons, and it's worth normalizing/scaling
 `Output Power` per city (e.g., dividing by that city's max or by installed
 capacity if known) before any cross-city model training.
 
-## Recommended defaults for the eventual data loader
+## Recommended defaults for the eventual data loader — [VERIFIED / implemented]
 
 - Discover sheets by city name; map `Amhst` → `Amherst` (the loader should
   not assume the literal sheet-name spelling is the canonical city name).
-- Default to the `'11-'16` sheets for Davis/Huron/Santa Barbara/La Jolla;
-  skip the four redundant `'14-'16` sheets unless specifically requested.
+  **Implemented:** `src/data_loader.py`'s `get_sheet_name()`/`load_city()`.
+- Keep **both** the `'11-'16'` and `'14-'16` sheets available per city
+  (not "skip the redundant ones" — see the correction above: the
+  spec's §3.1 3-year-vs-6-year ablation needs both). **Implemented:**
+  `load_city(city, years="long"|"short")`.
 - Treat `Cloud Type` as categorical (one-hot or embedding), not ordinal/
-  continuous.
+  continuous. **Implemented:** `src/preprocessing.py`'s
+  `fit_encoder()`/`apply_encoder()`.
 - Keep `Year/Month/Day/Hour/Minute` available for constructing a proper
   datetime index and for chronological splitting; don't drop them as
   "just IDs."
-- Be aware of, and handle explicitly (don't silently coerce), the 4
-  missing `Output Power` rows in Amherst and the 2012-03-22 anomaly across
-  the other four cities.
+- Be aware of, and handle explicitly (don't silently coerce): the 4
+  missing `Output Power` rows in Amherst, the 2012-03-22 anomaly across
+  the other four cities, and (new in Phase 3) the Davis-2013/
+  Huron-2012 Relative Humidity/Wind Direction anomaly above.
+
+## See also
+
+- `course_context/EDA_REPORT.md` — the full Phase 3 exploratory
+  analysis (distributions, correlations, class imbalance, temporal
+  dependence) this file's dataset-level facts feed into.
+- `course_context/LEAKAGE_MAP.md` — per-problem feature safety rules
+  built from these verified facts.

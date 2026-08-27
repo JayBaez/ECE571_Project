@@ -1,0 +1,3 @@
+city,affected_rows,pct_of_city,affected_years,affected_wind_direction_range,unaffected_wind_direction_range,affected_relative_humidity_range
+Davis,3480,14.43,[2013],0.36-4.47,0.0-360.0,101.1-359.7
+Huron,3287,13.63,[2012],0.37-3.79,0.0-360.0,103.4-360.0

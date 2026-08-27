@@ -210,6 +210,80 @@ Regression model, just to prove all the pieces fit together. Its
 output lives in `results/framework_demo/` and `figures/framework_demo/`
 — never mix these up with real Problem 1-5 results.
 
+## What I Learned About The Dataset (Phase 3 EDA)
+
+- The dataset really is clean in most ways: 0 duplicate rows anywhere,
+  only 4 missing values total (Amherst, one date), all columns match
+  the spec exactly. The two real problems are narrow and specific
+  (below), not pervasive.
+- GHI is clearly the strongest single predictor of Output Power, but
+  only when checked **within one city at a time** — pooled across all
+  five cities the correlation looks weak (0.43) purely because of the
+  scale differences, not because the relationship is actually weak
+  (per-city it's 0.75-0.97). This tripped me up when I first saw the
+  pooled number — worth remembering when looking at any pooled stat.
+- Full technical write-up: `course_context/EDA_REPORT.md`.
+
+## Important Graphs
+
+- `figures/eda/output_power_by_city_boxplot.png` — the city scale
+  difference in one picture (Davis towers over the other four).
+- `figures/eda/correlation_heatmap.png` — good one to screenshot for
+  the report's "why GHI matters" discussion.
+- `figures/eda/clear_sky_index_distribution.png` — shows the sky-
+  condition thresholds (0.85, 0.4) aren't cutting through a weird
+  spike in the distribution — reassuring that they're reasonable.
+- `figures/eda/temporal_sampling.png` — simplest way to explain the
+  "why only 11 readings a day" sampling design to the professor.
+
+## Important Data Problems
+
+1. **The 4 missing Amherst rows and the 2012-03-22 four-city zero-
+   output anomaly** — already known from Phase 0, re-confirmed here.
+2. **New this phase:** Relative Humidity and Wind Direction look
+   swapped (and/or in the wrong unit) for ALL of Davis 2013 and ALL of
+   Huron 2012 — about 14% of each city's data. Not something I need to
+   fix right now, but I need to decide what to do about it before
+   Problem 1/2 use those two columns. See the decision list below.
+
+## Things That Could Cause Leakage
+
+Full checklist: `course_context/LEAKAGE_MAP.md`. The one I'm most
+likely to forget: `DHI` + `DNI` + `Solar Zenith Angle` together can
+basically reconstruct `GHI`, so even though the spec only says to
+exclude `GHI`/`Clearsky GHI` from the sky-condition classifier, using
+all three of those "safe" columns together is a backdoor around that
+rule. Plan: run that classifier both with and without them.
+
+## Things I Need to Understand Before Problem 1
+
+- Exactly how I want to handle the Davis-2013/Huron-2012 Relative
+  Humidity/Wind Direction issue for a classifier that might use those
+  columns.
+- Whether I'm doing the GHI/DHI/DNI/Zenith leakage ablation as two
+  separate reported results or picking one and just documenting the
+  choice.
+
+## Things I Might Ask The Professor
+
+(See also "Questions for My Professor" above for the Phase 0 list —
+adding one new one from this phase's findings:)
+
+- Is it OK to just document and work around the Davis-2013/Huron-2012
+  Relative Humidity/Wind Direction swap in the report, or does it need
+  a deeper investigation than an EDA pass can give it?
+
+## Decisions We Have Not Made Yet
+
+1. Davis-2013/Huron-2012 Relative Humidity/Wind Direction anomaly:
+   exclude those rows, exclude the two columns entirely, attempt a
+   correction, or just document and accept the noise.
+2. Sky-condition classifier: ablate with/without
+   Solar-Zenith-Angle/DHI/DNI, or just pick one approach.
+3. Problem 4's SSL algorithm (still open from Phase 0).
+4. Whether to actually run the optional 3-year vs. 6-year ablation for
+   Problem 2, or skip it if time is tight.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

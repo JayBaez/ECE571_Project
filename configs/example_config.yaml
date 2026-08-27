@@ -1,4 +1,4 @@
-# Example experiment configuration.
+# Example experiment configuration - Phase 2 shape.
 #
 # This is a harmless, illustrative example only - it does not
 # correspond to any experiment that has actually been run. Per-problem
@@ -6,13 +6,23 @@
 # be added when each problem is implemented, following this same
 # shape. See course_context/EXPERIMENT_PLAN.md for the planned
 # experiments this will eventually configure.
+#
+# Required keys (checked by experiment_runner.validate_config()):
+# problem, model, seed. Everything else is optional / problem-specific.
 
-problem: problem2_regression
+problem: problem2
+task: regression
+dataset: Davis
 model: random_forest
-city: Davis
-sheet: "Davis 5hr-daily '11-'16"
-target: "Output Power"
-split_type: chronological
-train_fraction: 0.8
 seed: 42
+
+features:
+  use_clear_sky_index: true
+  use_time_cyclical: true
+  use_lags: false
+
+split:
+  type: chronological
+  train_fraction: 0.8
+
 notes: "Example config only - not yet used by any runnable script."

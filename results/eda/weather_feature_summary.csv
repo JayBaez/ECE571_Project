@@ -1,0 +1,10 @@
+column,mean,std,min,max,missing
+Dew Point,6.66,5.83,-24.6,24.3,0
+Solar Zenith Angle,42.95,15.95,9.61,79.5,0
+Surface Albedo,0.15,0.1,0.07,0.87,0
+Wind Speed,2.53,1.62,0.0,11.7,0
+Precipitable Water,4.01,9.76,0.1,100.0,0
+Wind Direction,221.93,104.54,0.0,360.0,0
+Relative Humidity,60.46,60.9,0.0,360.0,0
+Temperature,22.27,8.55,-21.3,46.0,0
+Pressure,1001.74,9.58,958.0,1030.0,0

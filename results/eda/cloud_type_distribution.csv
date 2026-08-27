@@ -1,0 +1,12 @@
+cloud_type_code,label,count,pct
+0,Clear,64727,59.65
+1,Probably Clear,7510,6.92
+2,Fog,4779,4.4
+3,Water,8865,8.17
+4,Super-Cooled Water,8425,7.76
+6,Opaque Ice,2427,2.24
+7,Cirrus,7776,7.17
+8,Overlapping,3905,3.6
+9,Overshooting,88,0.08
+10,Unknown,1,0.0
+12,Smoke,1,0.0

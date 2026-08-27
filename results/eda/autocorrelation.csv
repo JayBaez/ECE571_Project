@@ -1,0 +1,5 @@
+series,lag,autocorrelation
+Output Power,1,0.945
+Output Power,2,0.879
+Output Power,6,0.71
+GHI,1,0.938
