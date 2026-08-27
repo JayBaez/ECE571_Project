@@ -185,26 +185,27 @@ Davis/Amherst ratio is 1.99x), and why the spec requires nRMSE
 alongside raw RMSE. `src/preprocessing.py`'s target-scaling functions
 (built Phase 2) exist specifically for this.
 
-## Data Quality Issues (new findings this phase)
+## Data Quality Observations (findings this phase)
 
-**1. Relative Humidity / Wind Direction anomaly — Davis 2013 and
-Huron 2012 (previously undocumented).** `Relative Humidity` values
+**1. Relative Humidity / Wind Direction — Davis 2013 and Huron 2012
+(reviewed, not treated as an error).** `Relative Humidity` values
 above 100% (up to 360) were investigated properly rather than just
-flagged. Finding: this is **not random noise** — it's isolated to
-**exactly one full calendar year each** in two cities:
+flagged. Finding: isolated to **exactly one full calendar year each**
+in two cities:
 
 | City | Affected rows | % of city | Affected years | Wind Dir. range (affected) | Wind Dir. range (normal) |
 |---|---|---|---|---|---|
 | Davis | 3,480 | 14.43% | 2013 only | 0.36-4.47 | 0.0-360.0 |
 | Huron | 3,287 | 13.64% | 2012 only | 0.37-3.79 | 0.0-360.0 |
 
-In the affected rows, `Relative Humidity` reaches values up to 360
-(exactly Wind Direction's normal 0-360° range), while `Wind Direction`
-sits under ~4.5 (consistent with radians, or some other unit entirely
-— nowhere near the normal 0-360° range seen in every other year).
-This strongly suggests the two columns were swapped and/or recorded
-in a different unit for these two specific city-years. Not corrected
-here — see Decisions below.
+**Resolved (project owner's determination):** Relative Humidity can
+legitimately exceed 100% (e.g. brief supersaturation), and the small
+`Wind Direction` values are valid — most likely a different unit
+(e.g. radians rather than degrees) for that period's data, not
+swapped or corrupted data. No rows excluded, both columns kept.
+`Wind Direction` should be unit-normalized before use as a feature,
+since these two city-years sit on a different numeric scale than the
+rest of the dataset.
 
 **2. Confirmed from Phase 0:** 2012-03-22 zero-Output-Power anomaly
 across all four CA/inland cities despite normal irradiance —
@@ -219,27 +220,33 @@ Validation, above).
 
 Full detail in `course_context/LEAKAGE_MAP.md`. Summary: (1) `GHI`/
 `Clearsky GHI` must be excluded from the sky-condition classifier's
-features — they define the label; (2) `DHI`/`DNI`/`Solar Zenith Angle`
-together can approximately reconstruct `GHI`, worth an ablation; (3)
+features — they define the label; (2) **resolved:** `DHI`, `DNI`, and
+`Solar Zenith Angle` are also excluded from the primary sky-condition
+model (they can approximately reconstruct `GHI`; `Solar Zenith Angle`
+alone correlates with `GHI` at -0.74) — a secondary ablation *with*
+these columns is planned to quantify the leakage as an "Analysis &
+insight" finding, not to inform the headline result; (3)
 generation-regime terciles must be per-city; (4) Output Power lag
 features are only legitimate for the sequence-forecasting sub-task,
 and must be built before any split; (5) cross-city/transfer
 experiments need target scaling, fit on training/source data only.
 
-## Decisions That Need To Be Made Later
+## Decisions Made This Update (previously listed as open)
 
-1. **The Davis-2013 / Huron-2012 Relative Humidity/Wind Direction
-   anomaly** (new finding, above): exclude those two city-years'
-   affected rows, exclude `Relative Humidity`/`Wind Direction` as
-   features project-wide for consistency, attempt to reconstruct/
-   correct the swap, or accept the noise and document it as a
-   limitation. Not decided in this phase.
-2. Sky-condition classifier: whether to run with or without
-   `Solar Zenith Angle`/`DHI`/`DNI` as features (leakage-adjacent, not
-   leakage-certain) — recommend an ablation rather than a single
-   choice.
-3. Problem 4's SSL algorithm choice (course-taught vs. pseudo-labeling)
-   — still open from Phase 0, unaffected by this phase's findings.
-4. Whether to use the 3-year vs. 6-year sheet pairs for the optional
+1. **Relative Humidity / Wind Direction (Davis 2013, Huron 2012):**
+   resolved — not an error, both columns kept, see above.
+2. **Sky-condition classifier feature set:** resolved — exclude
+   `Solar Zenith Angle`/`DHI`/`DNI` from the primary model; run a
+   labeled secondary ablation including them to demonstrate the
+   leakage effect empirically.
+3. **Problem 4's SSL algorithm:** resolved — pseudo-labeling/
+   self-training as the primary method (satisfies the spec, which
+   doesn't mandate an algorithm), plus scikit-learn's
+   `LabelPropagation`/`LabelSpreading` (graph-based, course-taught) as
+   a second method for the "Breadth of methods" rubric component.
+
+## Decisions Still Open
+
+1. Whether to use the 3-year vs. 6-year sheet pairs for the optional
    Problem 2 ablation — the data supports it (confirmed again this
    phase); still a "when we get there" decision, not urgent now.

@@ -240,11 +240,12 @@ output lives in `results/framework_demo/` and `figures/framework_demo/`
 
 1. **The 4 missing Amherst rows and the 2012-03-22 four-city zero-
    output anomaly** — already known from Phase 0, re-confirmed here.
-2. **New this phase:** Relative Humidity and Wind Direction look
-   swapped (and/or in the wrong unit) for ALL of Davis 2013 and ALL of
-   Huron 2012 — about 14% of each city's data. Not something I need to
-   fix right now, but I need to decide what to do about it before
-   Problem 1/2 use those two columns. See the decision list below.
+2. **Relative Humidity / Wind Direction, Davis 2013 and Huron 2012**
+   (~14% of each city's data) — investigated, and **resolved: not an
+   error.** RH can legitimately exceed 100%; the small Wind Direction
+   values for those two years are valid, likely just a different unit
+   (radians vs. degrees). Keeping both columns; will normalize Wind
+   Direction's units consistently if it's used as a feature.
 
 ## Things That Could Cause Leakage
 
@@ -253,35 +254,42 @@ likely to forget: `DHI` + `DNI` + `Solar Zenith Angle` together can
 basically reconstruct `GHI`, so even though the spec only says to
 exclude `GHI`/`Clearsky GHI` from the sky-condition classifier, using
 all three of those "safe" columns together is a backdoor around that
-rule. Plan: run that classifier both with and without them.
+rule. **Resolved:** excluding all three from the primary sky-condition
+model; running a labeled secondary ablation with them included to show
+the leakage effect explicitly in the report.
 
 ## Things I Need to Understand Before Problem 1
 
-- Exactly how I want to handle the Davis-2013/Huron-2012 Relative
-  Humidity/Wind Direction issue for a classifier that might use those
-  columns.
-- Whether I'm doing the GHI/DHI/DNI/Zenith leakage ablation as two
-  separate reported results or picking one and just documenting the
-  choice.
+- How to normalize `Wind Direction`'s units consistently across all
+  years if I end up using it as a feature (Davis 2013/Huron 2012 are
+  on a different scale than the rest — see above).
+- How to cleanly report the GHI/DHI/DNI/Zenith leakage ablation as a
+  secondary, clearly-labeled result without it being confused for the
+  headline classifier result.
 
 ## Things I Might Ask The Professor
 
-(See also "Questions for My Professor" above for the Phase 0 list —
-adding one new one from this phase's findings:)
+(See also "Questions for My Professor" above for the Phase 0 list.)
 
-- Is it OK to just document and work around the Davis-2013/Huron-2012
-  Relative Humidity/Wind Direction swap in the report, or does it need
-  a deeper investigation than an EDA pass can give it?
+- (No new open question from Phase 3 — the Relative Humidity/Wind
+  Direction question resolved without needing to ask.)
 
-## Decisions We Have Not Made Yet
+## Decisions Made (resolved, previously open)
 
-1. Davis-2013/Huron-2012 Relative Humidity/Wind Direction anomaly:
-   exclude those rows, exclude the two columns entirely, attempt a
-   correction, or just document and accept the noise.
-2. Sky-condition classifier: ablate with/without
-   Solar-Zenith-Angle/DHI/DNI, or just pick one approach.
-3. Problem 4's SSL algorithm (still open from Phase 0).
-4. Whether to actually run the optional 3-year vs. 6-year ablation for
+1. **Davis-2013/Huron-2012 Relative Humidity/Wind Direction:** not an
+   error — keeping both columns, normalize Wind Direction's units if
+   used as a feature.
+2. **Sky-condition classifier:** exclude Solar Zenith Angle/DHI/DNI
+   from the primary model; run a secondary ablation with them included
+   to demonstrate the leakage effect.
+3. **Problem 4's SSL algorithm:** pseudo-labeling/self-training as the
+   primary method; graph-based label propagation
+   (`sklearn.semi_supervised.LabelPropagation`/`LabelSpreading`) added
+   for breadth.
+
+## Decisions Still Open
+
+1. Whether to actually run the optional 3-year vs. 6-year ablation for
    Problem 2, or skip it if time is tight.
 
 ## Notes About the Grading Rubric

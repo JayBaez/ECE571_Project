@@ -24,10 +24,13 @@ splits wherever time series is involved; `Cloud Type` always categorical.
   - Generation-regime: `Output Power` binned into per-city terciles
     (Low/Medium/High).
 - **Preprocessing:** exclude `GHI`, `Clearsky GHI` from features when
-  predicting sky-condition (label leakage); consider also excluding or
-  separately ablating `DHI`/`DNI`/`Solar Zenith Angle` together, since
-  they can approximately reconstruct `GHI`. One-hot/embed `Cloud Type`.
-  Standardize continuous features (fit on train only).
+  predicting sky-condition (label leakage). **Resolved:** also exclude
+  `DHI`/`DNI`/`Solar Zenith Angle` from the primary model (they can
+  approximately reconstruct `GHI`; `Solar Zenith Angle` alone
+  correlates with `GHI` at -0.74, confirmed in `EDA_REPORT.md`) — run
+  a secondary, clearly-labeled ablation including them to quantify the
+  leakage effect for the report's analysis section. One-hot/embed
+  `Cloud Type`. Standardize continuous features (fit on train only).
 - **Baseline:** majority-class / simple Logistic Regression.
 - **Classical models:** Decision Tree, Random Forest, Naive Bayes, kNN,
   Linear SVM (all taught, Weeks 03–07).
@@ -151,13 +154,16 @@ splits wherever time series is involved; `Cloud Type` always categorical.
 - **Baseline:** supervised-only model trained on just the p% labeled
   subset (no use of the unlabeled majority) — the exact comparison point
   the spec requires at each p.
-- **SSL method — pending your decision (see `TEACHER_EXPECTATIONS.md`):**
-  Transductive SVM, Co-training, or graph-based label propagation (all
-  taught, Week12) vs. pseudo-labeling/self-training (simpler, not
-  taught). Co-training needs two reasonably independent feature "views"
-  — e.g., irradiance-based features (GHI-family, Clearsky-family) vs.
-  meteorological features (temperature, humidity, wind, pressure) is a
-  natural split for this dataset if Co-training is chosen.
+- **SSL method — resolved (see `TEACHER_EXPECTATIONS.md`):** primary
+  method is **pseudo-labeling/self-training** (train on labeled data,
+  predict on unlabeled, add confident predictions back to training —
+  simple, and fully spec-compliant since the spec doesn't mandate an
+  algorithm). **Breadth addition:** also run **graph-based label
+  propagation** via scikit-learn's `LabelPropagation`/`LabelSpreading`
+  (taught, Week12, and a direct off-the-shelf implementation) as a
+  second method, for the "Breadth of methods" rubric component (20
+  pts). Transductive SVM and Co-training remain optional further
+  additions if time allows, not part of the primary plan.
 - **Evaluation metrics:** the spec suggests Macro-F1 (classification) or
   nRMSE (regression) as the label-efficiency curve's y-axis; AUC of
   that curve (metric vs. %labels) as the single-number summary — **not**

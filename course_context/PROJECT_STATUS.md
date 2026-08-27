@@ -109,12 +109,13 @@ Video presentation:                         NOT STARTED
 
 ## Known open items
 
-- Problem 4's SSL algorithm choice (course-taught vs. pseudo-labeling)
-  is still undecided — see `TEACHER_EXPECTATIONS.md`'s final section and
-  `YOUR_PROJECT_NOTES.md`.
-- The Davis-2013/Huron-2012 Relative Humidity/Wind Direction anomaly
-  found in Phase 3 (see `EDA_REPORT.md`) needs a decision before any
-  problem uses those two columns for those city-years.
+None currently — the three items previously listed here (Problem 4's
+SSL algorithm, the sky-condition classifier's Solar Zenith Angle/DHI/
+DNI feature question, and the Davis-2013/Huron-2012 Relative
+Humidity/Wind Direction finding) were all resolved based on the
+project owner's direct guidance. See `TEACHER_EXPECTATIONS.md`,
+`EXPERIMENT_PLAN.md`, `LEAKAGE_MAP.md`, and `YOUR_PROJECT_NOTES.md`
+for the resolutions.
 
 ## Context on repository history
 

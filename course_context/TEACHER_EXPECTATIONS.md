@@ -72,12 +72,19 @@ where it failed.
   - **WARNING (spec, verbatim intent):** do not use `GHI` or
     `Clearsky GHI` as input features when predicting this label — that
     leaks the label definition directly. Use the other weather
-    variables instead. *(Added caution: `DHI`, `DNI`, and
-    `Solar Zenith Angle` together can algebraically reconstruct `GHI`
-    quite closely — `GHI ≈ DNI · cos(zenith) + DHI` — so a model given
-    all three could partially reconstruct `k` even without `GHI`
-    itself. Worth a leakage check/ablation, not necessarily a hard
-    exclusion, since these are legitimate independent measurements.)*
+    variables instead. **RESOLVED decision (confirmed via EDA —
+    `EDA_REPORT.md`):** also **exclude `DHI`, `DNI`, and
+    `Solar Zenith Angle` from the primary sky-condition model.**
+    Together they can algebraically reconstruct `GHI` quite closely
+    (`GHI ≈ DNI · cos(zenith) + DHI`), and `Solar Zenith Angle` alone
+    was empirically confirmed to correlate with `GHI` at **-0.74** —
+    strong enough that including them risks defeating the spirit of
+    the spec's exclusion rule even while technically obeying its
+    letter. **As a secondary, explicitly-labeled ablation** (not the
+    headline result), also run the same classifier *with* those three
+    columns included and report the accuracy difference — this turns
+    the leakage risk into a demonstrated finding for the "Analysis &
+    insight" rubric component (20 pts), rather than just a caveat.
   - **Generation-regime class** (3-way): bin `Output Power` into
     Low/Medium/High **terciles, computed per city** (not globally).
 - **REQUIRED** — Confusion matrix figure.
@@ -153,12 +160,20 @@ where it failed.
   performance rises as labels are added. *(This corrects an ambiguity
   in the earlier version of this file — "AUC" here means area under the
   metric-vs-%labels curve, not the usual classification ROC-AUC.)*
-- **NEEDS A DECISION (see `ML_METHOD_MAP.md`)** — The spec doesn't name
-  a required SSL algorithm, so you have real freedom here: the three
-  methods actually taught (Transductive SVM, Co-training, graph-based
-  label propagation — Week12) are course-aligned choices; simple
-  pseudo-labeling/self-training is not taught but is simpler to
-  implement/explain and is a legitimate SSL technique in its own right.
+- **RESOLVED (was previously an open decision — see below)** — The
+  spec doesn't name a required SSL algorithm, so any reasonable
+  approach satisfies the letter of the spec. **Decision:** primary
+  method is **pseudo-labeling/self-training** (simple, easy to
+  implement and explain, satisfies every REQUIRED item above).
+  **Breadth addition:** also run **graph-based label propagation**
+  (scikit-learn's `LabelPropagation`/`LabelSpreading` — a direct,
+  off-the-shelf implementation of the course-taught Week12 method) as
+  a second SSL method, since the grading rubric's "Breadth of methods"
+  (20 pts) rewards comparing more than one approach per problem, and
+  this one is both taught in the course and cheap to add given
+  scikit-learn already implements it. Transductive SVM and Co-training
+  remain available as further optional additions if time allows, but
+  aren't part of the primary plan.
 
 ## Problem 5 — Transfer Learning
 
@@ -218,19 +233,20 @@ project is being built with AI coding assistance)
   actually executed and can reproduce — directly reinforces "never
   fabricate metrics."
 
-## Superseded items from the earlier version of this file
+## Superseded items from earlier versions of this file
 
-The previous version of this checklist (built without the real spec)
-listed four "open questions worth confirming with the professor." Three
-are now answered directly by the spec and removed:
-sky-condition/generation-regime definitions (now exact, see Problem 1
-above), and whether PCA/KPCA alone is sufficient for Problem 3 (spec
-requires reconstruction + explained variance regardless of whether an
-autoencoder is added, so PCA/KPCA alone is *acceptable* as long as both
-required metrics are reported). One remains genuinely open:
-
-1. **Still open:** the spec doesn't mandate a specific SSL algorithm for
-   Problem 4, so the choice between the three taught methods
-   (Transductive SVM / Co-training / graph-based) and untaught
-   pseudo-labeling remains yours to make — see `ML_METHOD_MAP.md` and
-   `EXPERIMENT_PLAN.md` for the trade-offs.
+The original version of this checklist (built without the real spec)
+listed four "open questions worth confirming with the professor."
+Three were answered directly by the spec: sky-condition/generation-
+regime definitions (now exact, see Problem 1 above), and whether
+PCA/KPCA alone is sufficient for Problem 3 (spec requires
+reconstruction + explained variance regardless of whether an
+autoencoder is added, so PCA/KPCA alone is *acceptable*). The fourth —
+Problem 4's SSL algorithm choice — was left open through Phase 3 and
+is now **resolved** (see Problem 4 above: pseudo-labeling as primary,
+graph-based label propagation added for breadth). The Solar Zenith
+Angle/DHI/DNI leakage question (Problem 1, above) is also now
+**resolved** as of this update, based on the project owner's direct
+guidance following the Phase 3 EDA findings. No open decisions remain
+in this file as of this update — see `YOUR_PROJECT_NOTES.md` for
+anything that comes up in later phases.

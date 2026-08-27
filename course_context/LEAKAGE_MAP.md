@@ -20,31 +20,30 @@ Defined as `Clear-Sky Index = GHI / Clearsky GHI`, thresholded at
   literally define the label. Using either as an input is using the
   answer to predict the answer (the project spec states this
   explicitly).
-- **Secondary leakage risk, verified in EDA (Section 21):**
-  `DHI`, `DNI`, and `Solar Zenith Angle` together can approximately
-  reconstruct `GHI` (`GHI ≈ DNI·cos(zenith) + DHI`), and
-  `Solar Zenith Angle` alone correlates at **-0.74** with `GHI`
-  (`EDA_REPORT.md`, correlation section). Using all three together is
-  not automatically disqualifying — they're legitimate independent
-  meteorological measurements a model could plausibly have access to
-  in practice — but a model given all three could partially
-  reconstruct the label through the back door. **Recommendation:**
-  run this classifier with and without `Solar Zenith Angle`/`DHI`/
-  `DNI` as an ablation, and report both, rather than silently picking
-  one.
+- **RESOLVED — also excluded from the primary model:** `DHI`, `DNI`,
+  and `Solar Zenith Angle` together can approximately reconstruct
+  `GHI` (`GHI ≈ DNI·cos(zenith) + DHI`), and `Solar Zenith Angle`
+  alone correlates at **-0.74** with `GHI` (`EDA_REPORT.md`,
+  correlation section) — strong enough to risk defeating the spec's
+  exclusion rule in spirit even while obeying it in letter. **Primary
+  model excludes all three.** A secondary, explicitly-labeled ablation
+  *including* them is planned to quantify and demonstrate the leakage
+  effect for the report's "Analysis & insight" section — not to
+  inform the headline result.
 - **Safe to use:** `Cloud Type` (verified in EDA to correlate with,
   but not be redundant with, Clear-Sky Index — Section 21), all
   weather columns (`Temperature`, `Relative Humidity`, `Wind Speed`,
   `Wind Direction`, `Dew Point`, `Pressure`, `Surface Albedo`,
   `Precipitable Water`), and time features (`Hour`/`Month`/
   `DayOfYear` cyclical encodings from `src/feature_engineering.py`).
-- **Caution — verified data-quality issue (EDA Section 16):**
-  `Relative Humidity` and `Wind Direction` appear swapped and/or in
-  the wrong unit for all of Davis 2013 and all of Huron 2012 (~14% of
-  each city's data). This isn't a leakage risk, but a model trained
-  including those rows without addressing this will learn a corrupted
-  relationship for those two features. See `EDA_REPORT.md` for detail
-  and `YOUR_PROJECT_NOTES.md` for the open decision.
+- **Note — reviewed, not a leakage risk (EDA Section 16):**
+  `Relative Humidity` and `Wind Direction` have unusual-looking values
+  for all of Davis 2013 and all of Huron 2012 (~14% of each city's
+  data). **Resolved:** not an error — Relative Humidity can
+  legitimately exceed 100%, and `Wind Direction`'s small values for
+  those two city-years are valid, most likely a different unit
+  (e.g. radians). Both columns are kept; normalize `Wind Direction`'s
+  units consistently before use. See `DATASET_PROFILE.md` for detail.
 
 ### Target B: Generation-regime (Low/Medium/High, per-city terciles of Output Power)
 

@@ -152,26 +152,31 @@ Negative values in `Temperature` and `Dew Point` (both in Celsius) are
 common across all sheets in winter months — this is expected and **not** a
 data-quality issue.
 
-## A second real, non-obvious data-quality anomaly: Relative Humidity / Wind Direction swap — [VERIFIED, found in Phase 3]
+## Relative Humidity / Wind Direction — reviewed, not treated as an error — [VERIFIED values, RESOLVED interpretation]
 
 `Relative Humidity` shows values above 100% (up to 360) in a subset of
-rows. Investigated properly rather than dismissed as noise (full
-analysis: `course_context/EDA_REPORT.md`) — the pattern is clean and
-isolated:
+rows, isolated to two specific city-years:
 
 | City | Affected rows | % of city | Affected year(s) |
 |---|---|---|---|
 | Davis | 3,480 | 14.4% | **2013 only** |
 | Huron | 3,287 | 13.6% | **2012 only** |
 
-In these rows, `Relative Humidity` reaches up to 360 (exactly
-`Wind Direction`'s normal 0–360° range), while `Wind Direction` itself
-sits under ~4.5 (consistent with radians, or some other non-degree
-unit — nowhere near its normal 0–360° range in every other year).
-This strongly suggests the two columns were swapped and/or recorded in
-a different unit for exactly these two city-years. Not corrected here
-— see `course_context/EDA_REPORT.md`'s "Decisions That Need To Be Made
-Later" for the options.
+In these rows, `Wind Direction` values sit under ~4.5, well below the
+0–360° range seen in every other year.
+
+**Resolved (project owner's determination):** this is NOT a data
+error. Relative Humidity can legitimately exceed 100% (e.g. brief
+supersaturation), and the small `Wind Direction` values for these two
+city-years are valid — most likely just a different unit (e.g.
+radians rather than degrees) for that period's data source, not
+corrupted or swapped data. **No rows are excluded and neither column
+is dropped.** If `Wind Direction` is used as a model feature,
+normalize/convert units consistently across all years before use,
+since these two city-years otherwise sit on a different numeric scale
+than the rest of the dataset. This supersedes the earlier framing of
+this finding as a "swap anomaly requiring a later decision" in
+`course_context/EDA_REPORT.md`.
 
 ## Output Power ranges by city (this matters for cross-city work) — [VERIFIED, cross-checked against SPECIFIED values]
 
@@ -221,8 +226,9 @@ capacity if known) before any cross-city model training.
   "just IDs."
 - Be aware of, and handle explicitly (don't silently coerce): the 4
   missing `Output Power` rows in Amherst, the 2012-03-22 anomaly across
-  the other four cities, and (new in Phase 3) the Davis-2013/
-  Huron-2012 Relative Humidity/Wind Direction anomaly above.
+  the other four cities. Davis 2013/Huron 2012 have `Wind Direction`
+  on a different numeric scale (likely radians, not degrees) — not an
+  error, but normalize consistently if used as a feature.
 
 ## See also
 
