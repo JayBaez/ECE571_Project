@@ -1,0 +1,7 @@
+{
+  "total_test_rows": 4823,
+  "total_errors": 244,
+  "error_rate": 0.050590918515446816,
+  "mean_output_power_on_errors": 165.4253595081967,
+  "mean_output_power_overall": 150.5101023429401
+}

@@ -1,0 +1,8 @@
+{
+  "total_test_rows": 4823,
+  "total_errors": 813,
+  "error_rate": 0.16856728177482894,
+  "mean_clear_sky_index_on_errors": 0.7066051475666814,
+  "mean_clear_sky_index_overall": 0.8447277609779522,
+  "pct_errors_near_threshold_boundary": 0.35178351783517836
+}

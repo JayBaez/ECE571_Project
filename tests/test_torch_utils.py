@@ -28,6 +28,15 @@ def test_make_dataloader_produces_correct_batch_shapes():
     assert first_batch_y.shape == (4, 1)
 
 
+def test_make_dataloader_supports_long_dtype_for_classification():
+    X = np.random.default_rng(0).normal(size=(10, 3)).astype(np.float32)
+    y_class_labels = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2, 0])
+    loader = torch_utils.make_dataloader(X, y_class_labels, batch_size=5, shuffle=False, y_dtype=torch.long)
+    batch_X, batch_y = next(iter(loader))
+    assert batch_y.dtype == torch.long
+    assert batch_y.shape == (5,)  # class indices, not one-hot
+
+
 def test_train_torch_model_reduces_loss_on_a_trivial_problem(tmp_path):
     utils.set_seed(42)
     X, y = _tiny_linear_problem(n_samples=200)

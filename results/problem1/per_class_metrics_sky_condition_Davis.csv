@@ -1,0 +1,4 @@
+class,precision,recall,f1,support
+Overcast,0.526,0.845,0.648,535
+Partly Cloudy,0.559,0.574,0.566,894
+Clear,1.0,0.897,0.946,3394
