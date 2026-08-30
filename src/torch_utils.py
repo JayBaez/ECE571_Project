@@ -25,7 +25,7 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 
-def make_dataloader(X, y, batch_size: int = 32, shuffle: bool = False) -> DataLoader:
+def make_dataloader(X, y, batch_size: int = 32, shuffle: bool = False, y_dtype=torch.float32) -> DataLoader:
     """
     Turn feature/target arrays into a PyTorch DataLoader.
 
@@ -50,13 +50,18 @@ def make_dataloader(X, y, batch_size: int = 32, shuffle: bool = False) -> DataLo
     batch_size : int
     shuffle : bool
         See the note above.
+    y_dtype : torch dtype
+        `torch.float32` (default) for regression targets. Use
+        `torch.long` for classification targets - PyTorch's
+        `nn.CrossEntropyLoss` requires integer class-index targets,
+        not floats.
 
     Returns
     -------
     torch.utils.data.DataLoader
     """
     X_tensor = torch.as_tensor(X, dtype=torch.float32)
-    y_tensor = torch.as_tensor(y, dtype=torch.float32)
+    y_tensor = torch.as_tensor(y, dtype=y_dtype)
     dataset = TensorDataset(X_tensor, y_tensor)
     return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
 

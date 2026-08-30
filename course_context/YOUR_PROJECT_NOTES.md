@@ -292,6 +292,58 @@ the leakage effect explicitly in the report.
 1. Whether to actually run the optional 3-year vs. 6-year ablation for
    Problem 2, or skip it if time is tight.
 
+## Problem 1 — What I Learned
+
+- **What "classification" means here:** instead of predicting a number
+  (that's Problem 2), I'm predicting which of 3 labeled buckets a row
+  falls into. Two separate targets: sky-condition (Clear/Partly
+  Cloudy/Overcast) and generation-regime (Low/Medium/High power
+  output).
+- **Why GHI can't be used for sky-condition:** the label itself IS
+  `GHI / Clearsky GHI` thresholded into 3 buckets. Using GHI as a
+  feature would be like giving the model the answer key. I actually
+  proved how big a deal this is: adding back the "risky" columns
+  (DHI/DNI/Solar Zenith Angle, which can reconstruct GHI) made
+  accuracy jump from ~0.74-0.81 to ~0.98 — a huge, very concrete
+  demonstration of leakage, not just a theoretical worry.
+- **Why Cloud Type is categorical:** it's a code (0=Clear, 1=Probably
+  Clear, etc.), not a real number — treating "8" as "twice 4" would be
+  meaningless. One-hot encoding turns it into several yes/no columns
+  instead.
+- **Why accuracy alone isn't enough:** Clear-sky rows dominate the
+  data (~72% overall). A model that always guesses "Clear" gets ~72%
+  accuracy while being useless. Balanced accuracy (average per-class
+  recall) doesn't get fooled by this — that's exactly why my "majority
+  baseline" always scores 0.333 (chance level for 3 balanced classes)
+  instead of looking artificially good.
+- **Why chronological splitting matters:** the test set has to be
+  data the model genuinely hasn't seen yet, in time. For generation-
+  regime specifically, I also learned the tercile *boundaries*
+  themselves have to be computed from training data only — otherwise
+  I'd be leaking test-period statistics into how the labels are even
+  defined.
+- **A finding I didn't expect:** no single model type won everywhere.
+  Logistic regression beat Random Forest and the MLP for Davis
+  sky-condition. Simpler isn't always worse.
+
+## Problem 1 — Things I Need To Explain To My Professor
+
+- Why I excluded DHI/DNI/Solar Zenith Angle from the primary
+  sky-condition model even though the spec only explicitly forbids
+  GHI/Clearsky GHI — and the ablation number (0.74→0.98) that proves
+  this wasn't paranoia.
+- Why generation-regime terciles are computed per-city and only on
+  training data, and what happened when I checked the test-set
+  distribution afterward (Amherst skewed to 38/35/27, not 33/33/33).
+- Why I dropped (not interpolated) the 4 missing Amherst rows for the
+  generation-regime task specifically — interpolating a target and
+  training on it as if it were real would be fabricating a label.
+- Why hyperparameter tuning barely changed anything here (all deltas
+  within ±0.008) — worth being upfront about rather than only
+  reporting the tuned numbers.
+- Why I used one consistent model (Random Forest) for the feature
+  ablation study instead of each combo's individual best model.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods
