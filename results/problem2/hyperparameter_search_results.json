@@ -1,0 +1,38 @@
+{
+  "Davis": {
+    "ridge": 10.0,
+    "random_forest": {
+      "n_estimators": 100,
+      "max_depth": 15,
+      "min_samples_leaf": 3
+    },
+    "gradient_boosting": {
+      "n_estimators": 150,
+      "learning_rate": 0.05,
+      "max_depth": 3
+    },
+    "mlp": {
+      "hidden_size": 32,
+      "dropout": 0.0,
+      "lr": 0.001
+    }
+  },
+  "Amherst": {
+    "ridge": 10.0,
+    "random_forest": {
+      "n_estimators": 150,
+      "max_depth": null,
+      "min_samples_leaf": 1
+    },
+    "gradient_boosting": {
+      "n_estimators": 150,
+      "learning_rate": 0.05,
+      "max_depth": 3
+    },
+    "mlp": {
+      "hidden_size": 64,
+      "dropout": 0.1,
+      "lr": 0.001
+    }
+  }
+}

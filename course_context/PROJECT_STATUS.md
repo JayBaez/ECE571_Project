@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Problem 1 completion (supervised classification).
+**Last updated:** Problem 2 completion (supervised regression).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -10,7 +10,7 @@ Phase 1 — Repository construction:          COMPLETE
 Phase 2 — ML framework:                     COMPLETE
 Phase 3 — Dataset validation:                COMPLETE
 Problem 1 (Classification):                 COMPLETE
-Problem 2 (Regression):                     NOT STARTED
+Problem 2 (Regression):                     COMPLETE
 Problem 3 (Dimension Reduction):            NOT STARTED
 Problem 4 (Semi-Supervised Learning):       NOT STARTED
 Problem 5 (Transfer Learning):              NOT STARTED
@@ -18,6 +18,31 @@ Final optimization:                         NOT STARTED
 Report:                                     NOT STARTED
 Video presentation:                         NOT STARTED
 ```
+
+## Problem 2 summary
+
+- Built `problems/problem2_regression/` (features.py, models.py,
+  sequence.py, run_experiments.py) reusing the Phase 2 framework
+  throughout, including target scaling functions built in Phase 2
+  specifically for this kind of need (`fit_target_scaler()` etc.).
+  Added R² to `src/evaluation.py`'s `regression_metrics()` (additive,
+  non-breaking - existing tests unaffected, one new test added).
+- Ran same-city (Davis, Amherst), cross-city zero-shot (Davis→Huron/
+  Santa Barbara/La Jolla), 3yr-vs-6yr (Davis), and K=12 sequence
+  (GRU) experiments — 108 real experiment rows in `results/problem2/
+  problem2_results.csv`.
+- **Cross-city zero-shot showed severe raw-scale failure (R² as low as
+  -72), reported honestly rather than hidden** — then a labeled
+  diagnostic proved the failure was almost entirely a scale mismatch,
+  not a pattern-recognition failure (R² 0.55-0.84 once rescaled).
+- **Caught and fixed a real methodology bug during development:** the
+  first GRU hyperparameter search implementation scored candidates
+  against the real test set, violating the project's own rule. Fixed
+  before any tuned result was recorded.
+- Saved best models for Davis, Amherst, cross-city, and the sequence
+  model (`results/problem2/models/`), all verified loadable.
+- **No fabricated numbers** — every result in
+  `course_context/PROBLEM2_REPORT.md` traces to an actual run.
 
 ## Problem 1 summary
 

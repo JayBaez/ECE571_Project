@@ -33,6 +33,16 @@ def test_regression_metrics_nrmse_mean_normalization():
     assert metrics["nrmse"] == 0.0
 
 
+def test_regression_metrics_r2_perfect_and_imperfect():
+    y_true = np.array([1.0, 2.0, 3.0, 4.0])
+    perfect_pred = np.array([1.0, 2.0, 3.0, 4.0])
+    assert evaluation.regression_metrics(y_true, perfect_pred)["r2"] == 1.0
+
+    # Predicting the mean every time should give r2 == 0.0
+    mean_pred = np.full_like(y_true, y_true.mean())
+    assert np.isclose(evaluation.regression_metrics(y_true, mean_pred)["r2"], 0.0)
+
+
 def test_regression_metrics_unknown_normalization_raises():
     with pytest.raises(ValueError):
         evaluation.regression_metrics([1.0], [1.0], normalization="bogus")

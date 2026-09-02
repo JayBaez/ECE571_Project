@@ -1,0 +1,33 @@
+{
+  "davis_best_model": {
+    "type": "gradient_boosting",
+    "params": "default (empirically best)",
+    "file": "davis_best_model.joblib"
+  },
+  "amherst_best_model": {
+    "type": "gradient_boosting_tuned",
+    "params": {
+      "n_estimators": 150,
+      "learning_rate": 0.05,
+      "max_depth": 3
+    },
+    "file": "amherst_best_model.joblib"
+  },
+  "cross_city_model": {
+    "type": "gradient_boosting (same as davis_best_model)",
+    "source_city": "Davis",
+    "file": "cross_city_model.joblib"
+  },
+  "sequence_model": {
+    "type": "GRU",
+    "params": {
+      "hidden_size": 64,
+      "num_layers": 1,
+      "dropout": 0.1,
+      "lr": 0.001
+    },
+    "k_steps": 12,
+    "file": "sequence_model.pt",
+    "n_features": 31
+  }
+}

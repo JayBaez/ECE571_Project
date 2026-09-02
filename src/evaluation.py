@@ -19,6 +19,7 @@ from sklearn.metrics import (
     f1_score,
     mean_absolute_error,
     precision_score,
+    r2_score,
     recall_score,
 )
 
@@ -38,6 +39,7 @@ REGRESSION_METRIC_DIRECTION = {
     "rmse": "lower_better",
     "mae": "lower_better",
     "nrmse": "lower_better",
+    "r2": "higher_better",
 }
 
 
@@ -198,7 +200,13 @@ def regression_metrics(y_true, y_pred, normalization: str = "range") -> dict:
     Returns
     -------
     dict
-        {"rmse", "mae", "nrmse"} - lower is better for all three.
+        {"rmse", "mae", "nrmse", "r2"} - lower is better for the first
+        three, higher is better for r2 (R-squared: the fraction of the
+        target's variance the model explains - 1.0 is a perfect fit,
+        0.0 is no better than always predicting the mean, and it CAN
+        go negative if a model is worse than that trivial baseline -
+        worth watching for in cross-city zero-shot results, where a
+        large scale mismatch can easily push R² negative).
 
     Raises
     ------
@@ -208,16 +216,14 @@ def regression_metrics(y_true, y_pred, normalization: str = "range") -> dict:
     y_true = np.asarray(y_true, dtype=float)
     y_pred = np.asarray(y_pred, dtype=float)
 
-    rmse = float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
-    mae = float(mean_absolute_error(y_true, y_pred))
-
-    if normalization == "range":
-        denominator = y_true.max() - y_true.min()
-    elif normalization == "mean":
-        denominator = y_true.mean()
-    else:
+    if normalization not in ("range", "mean"):
         raise ValueError(f"Unknown normalization '{normalization}'. Use 'range' or 'mean'.")
 
+    rmse = float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+    mae = float(mean_absolute_error(y_true, y_pred))
+    r2 = float(r2_score(y_true, y_pred))
+
+    denominator = (y_true.max() - y_true.min()) if normalization == "range" else y_true.mean()
     nrmse = float(rmse / denominator) if denominator != 0 else float("nan")
 
-    return {"rmse": rmse, "mae": mae, "nrmse": nrmse}
+    return {"rmse": rmse, "mae": mae, "nrmse": nrmse, "r2": r2}

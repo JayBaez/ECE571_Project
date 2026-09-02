@@ -344,6 +344,78 @@ the leakage effect explicitly in the report.
 - Why I used one consistent model (Random Forest) for the feature
   ablation study instead of each combo's individual best model.
 
+## Problem 2 — What I Learned
+
+- **What regression means here:** instead of picking a category
+  (Problem 1), I'm predicting an actual number — Output Power in kW.
+- **RMSE:** root-mean-square error, in the same units as the target
+  (kW), so "RMSE=15" literally means "typically off by around 15 kW,"
+  but big misses count extra (squared before averaging), so it's more
+  sensitive to occasional large errors than MAE.
+- **MAE:** mean absolute error — the plain average size of a miss,
+  also in kW, easier to explain to a non-technical audience, less
+  swayed by outliers than RMSE.
+- **nRMSE:** RMSE divided by the target's range (I kept using the same
+  "divide by range" convention I set up back in Phase 2, documented
+  clearly so it's consistent everywhere) — this is what makes RMSE
+  numbers comparable ACROSS cities with very different scales.
+- **Why Output Power's scale differs by city:** Davis's plant is much
+  bigger than Huron/Santa Barbara/La Jolla's — I saw this cause a real
+  problem when I tried zero-shot transfer (see below).
+- **Why chronological splitting matters:** same reason as Problem 1 —
+  the model can't be tested on data from before it "learned" to avoid
+  cheating by seeing the future.
+- **What zero-shot means:** training only on Davis, then testing
+  directly on a totally different city with ZERO training on that
+  city's own data. I saw this fail dramatically when I just used raw
+  kW predictions (R² as bad as -72!), but once I checked whether it
+  was just a SCALE problem (diagnostic only, not a real fix), it
+  turned out the model actually understood the target cities' weather
+  patterns fairly well — it was just predicting in the wrong "units"
+  for that city's plant size.
+- **Why sequence models are useful:** they use the recent past (not
+  just the current moment) to predict what happens next — genuinely
+  useful for real forecasting, where you don't get to see the future
+  weather at the exact moment you're predicting.
+- **What a 12-step window means:** the previous 12 readings (30 min
+  apart = 6 hours of history) get fed in together to predict the next
+  reading.
+- **Why lagged Output Power can be legitimate for forecasting:** inside
+  a 12-step window, every value is from BEFORE the thing being
+  predicted — so including past Output Power readings as inputs isn't
+  cheating, it's exactly what a real forecaster would have access to.
+- **Why target normalization is tricky across cities:** I had to
+  separate two totally different reasons to scale a target: (1)
+  helping a neural network train faster/more stably [fine, just uses
+  that one city's own data], vs. (2) rescaling zero-shot predictions
+  using the TARGET city's own statistics [not fine for a real
+  zero-shot claim, since a real deployment wouldn't have that data
+  yet]. I built the sequence model's target scaling for reason (1) and
+  used a clearly-labeled "diagnostic" for reason (2), which stayed out
+  of the actual reported zero-shot number.
+
+## Problem 2 — Things I Need To Explain To My Professor
+
+- Why the cross-city zero-shot result looks terrible in raw RMSE
+  (~125 kW) but is actually informative — the diagnostic
+  scale-correction shows the model's underlying pattern-matching is
+  good (R² 0.55–0.84), it's just outputting the wrong scale, which is
+  itself an important, honest finding.
+- Why the GRU sequence model "losing" to the best non-sequence model
+  isn't really a fair fight — the non-sequence model gets to see the
+  exact same-moment weather, while the GRU only gets the past. GRU vs.
+  persistence (its real competitor) is where it clearly wins.
+- Why I reduced Random Forest's default tree count partway through
+  (200→100) — a documented, timed efficiency decision, not a quality
+  compromise (RMSE barely changed).
+- A mistake I caught myself: my first version of the GRU hyperparameter
+  search accidentally scored candidates against the real test set. I
+  found and fixed this before recording any tuned result — worth
+  explaining as an example of catching my own methodology error.
+- The 3-year vs. 6-year result (3yr looked better) is confounded by
+  the two sheets not sharing a test period — I'm reporting it honestly
+  but flagging that it doesn't cleanly prove "less data is better."
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

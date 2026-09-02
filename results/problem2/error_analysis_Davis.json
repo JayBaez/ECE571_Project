@@ -1,0 +1,8 @@
+{
+  "overall_mean_abs_error": 8.311423071632234,
+  "low_ghi_mean_abs_error": 12.395650318054484,
+  "high_ghi_mean_abs_error": 3.994815507398733,
+  "rapidly_changing_ghi_mean_abs_error": 17.41812931224208,
+  "cloudy_mean_abs_error": 13.0154521747558,
+  "clear_mean_abs_error": 5.357462461459476
+}
