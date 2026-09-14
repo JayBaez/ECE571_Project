@@ -481,6 +481,70 @@ the leakage effect explicitly in the report.
 - Why the autoencoder consistently beat PCA — its ability to learn
   nonlinear encodings, not just a lucky architecture choice.
 
+## Problem 4 — What I Learned
+
+- **What semi-supervised learning means:** training with a mix of a
+  small amount of labeled data AND a larger pool of unlabeled data,
+  hoping the unlabeled examples' input values (not their answers, which
+  we don't have) still help the model somehow.
+- **The difference between labeled and unlabeled data:** labeled = the
+  model sees both X (features) and y (the true answer). Unlabeled = the
+  model only sees X — the true y exists in my dataset (since I started
+  from real labeled data and hid some labels on purpose) but the model
+  is never allowed to see it.
+- **What pseudo-labeling means:** train on the small labeled set, use
+  that model to GUESS labels for the unlabeled data, keep only the
+  guesses the model is very confident about, add those guesses to the
+  training set as if they were real labels, and retrain.
+- **How confidence thresholds work:** the model outputs a probability
+  for each possible class; a pseudo-label only gets accepted if that
+  probability is above a cutoff (I used 0.90, chosen by testing 0.80/
+  0.90/0.95 on a held-out validation slice, not guessed).
+- **Why pseudo-labeling can help:** more (even self-generated) labeled
+  examples can, in principle, help a model learn patterns it wouldn't
+  see from a tiny labeled set alone.
+- **Why pseudo-labeling can also reinforce mistakes:** if the model is
+  confidently WRONG about something, adding that wrong guess as a
+  "real" label just teaches the model to be more confidently wrong. I
+  saw a milder version of this risk directly: without a cap, my first
+  pseudo-labeling round added 12,170 new labels and 98% of them were
+  the same class ("Clear") — not wrong, but so lopsided it actually
+  hurt performance slightly until I added a cap.
+- **What label efficiency means:** how much performance you get out of
+  a given amount of labeled data — a more "label-efficient" method
+  needs fewer real labels to reach the same accuracy.
+- **Why 10% labels is the most interesting case:** that's where
+  unlabeled data theoretically has the most room to help, since the
+  labeled set alone is smallest and weakest there.
+- **What SSL gain means:** SSL's score minus the supervised-only
+  score, at the same label fraction. Positive = unlabeled data helped.
+  I got small NEGATIVE numbers at all three fractions — genuinely
+  useful to know, not a failure of the experiment.
+- **Why the test labels must remain hidden:** they're the one thing
+  that has to stay completely untouched until the very end, so the
+  final numbers actually mean something. I only used the training
+  pool's hidden labels, once, for an "offline diagnostic" check
+  clearly separated from anything that could influence the model.
+
+## Problem 4 — Things I Need To Explain To My Professor
+
+- Why SSL came out slightly WORSE than supervised-only at every label
+  fraction, and why that's a legitimate, reportable finding rather
+  than something to hide or "fix."
+- The offline diagnostic finding that explains WHY: my pseudo-labels
+  were 100% accurate (verified directly against the hidden true
+  labels) but almost all for the easy "Clear" class — so they didn't
+  add new information, just repeated what the model already knew.
+- Why I added a cap on pseudo-labels per iteration after finding
+  (empirically, by testing it) that uncapped self-training performed
+  worse due to class imbalance in the added labels.
+- Why Label Spreading (my optional second method) did notably worse
+  than pseudo-labeling here — likely its KNN-graph approach struggling
+  with a large unlabeled pool in a moderate-dimensional feature space.
+- Why I reused Problem 1's exact train/test split and best model
+  instead of picking new ones — keeps this a fair, apples-to-apples
+  comparison to something already established.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

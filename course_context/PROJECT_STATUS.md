@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Problem 3 completion (dimension reduction).
+**Last updated:** Problem 4 completion (semi-supervised learning).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -12,12 +12,42 @@ Phase 3 — Dataset validation:                COMPLETE
 Problem 1 (Classification):                 COMPLETE
 Problem 2 (Regression):                     COMPLETE
 Problem 3 (Dimension Reduction):            COMPLETE
-Problem 4 (Semi-Supervised Learning):       NOT STARTED
+Problem 4 (Semi-Supervised Learning):       COMPLETE
 Problem 5 (Transfer Learning):              NOT STARTED
 Final optimization:                         NOT STARTED
 Report:                                     NOT STARTED
 Video presentation:                         NOT STARTED
 ```
+
+## Problem 4 summary
+
+- Built `problems/problem4_semi_supervised/` (pseudo_labeling.py,
+  run_experiments.py), directly reusing Problem 1's exact Davis
+  sky-condition dataset build (same chronological split, same
+  leakage-safe features, same empirically-best model — Logistic
+  Regression with balanced weight) rather than re-implementing any of
+  it.
+- Ran pseudo-labeling/self-training (primary SSL method) and Label
+  Spreading (optional second method) at label fractions 10%/30%/50%,
+  3 seeds each, against a supervised-only baseline on the SAME labeled
+  subsets — 27 real experiment rows in `results/problem4/
+  problem4_results.csv`.
+- **Finding: SSL gain was slightly negative at every label fraction**
+  (reported honestly, not adjusted). An offline diagnostic (hidden
+  labels used only for this post-hoc check, never during training)
+  explained why: pseudo-labels were 100% accurate but concentrated on
+  the already-easy "Clear" class, adding redundant confirmation
+  instead of new information about the harder classes.
+- Found and used a real, evidence-based safeguard: uncapped
+  self-training collapsed toward one class and performed worse than a
+  capped version (tested directly, not assumed) — 1,000
+  pseudo-labels/iteration was adopted based on that comparison.
+- Fixed a `numpy.trapz`→`trapezoid` API break and added explicit
+  `random_state` to the model factory for project-wide consistency.
+- Saved 6 models (supervised + SSL at each fraction), all verified
+  loadable.
+- **No fabricated numbers** — every result in
+  `course_context/PROBLEM4_REPORT.md` traces to an actual run.
 
 ## Problem 3 summary
 

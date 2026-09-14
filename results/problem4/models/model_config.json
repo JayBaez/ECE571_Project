@@ -1,0 +1,25 @@
+{
+  "base_model": "LogisticRegression(max_iter=1000, class_weight=\"balanced\", random_state=seed)",
+  "justification": "Problem 1 actual best Davis sky-condition model (balanced_accuracy=0.772)",
+  "primary_ssl_method": "pseudo_labeling (self-training)",
+  "confidence_threshold": 0.9,
+  "confidence_threshold_selection": "chosen via validation split among [0.80, 0.90, 0.95] - see problem4_report",
+  "max_iterations": 5,
+  "max_pseudo_labels_per_iteration": 1000,
+  "max_pseudo_labels_per_iteration_justification": "uncapped self-training collapsed toward the Clear class more severely and performed worse (balanced_acc 0.744 uncapped vs 0.751 with cap=1000, at 10pct seed=42)",
+  "optional_second_ssl_method": "LabelSpreading(kernel=\"knn\", n_neighbors=7, max_iter=30)",
+  "city": "Davis",
+  "task": "sky_condition classification (3-class: Clear/Partly Cloudy/Overcast)",
+  "feature_set": "unified leakage-safe (Problem 1 primary) - Cloud Type + weather + cyclical time, no GHI/Clearsky GHI/DHI/DNI/Solar Zenith Angle",
+  "label_fractions_tested": [
+    0.1,
+    0.3,
+    0.5
+  ],
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "models_saved": "seed=42 representative models for each (label_fraction, supervised_or_ssl) combination"
+}

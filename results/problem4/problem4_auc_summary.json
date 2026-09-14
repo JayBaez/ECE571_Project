@@ -1,0 +1,14 @@
+{
+  "macro_f1": {
+    "metric": "macro_f1",
+    "supervised_auc": 0.28232829956891214,
+    "ssl_auc": 0.281633879312598,
+    "ssl_better": false
+  },
+  "balanced_accuracy": {
+    "metric": "balanced_accuracy",
+    "supervised_auc": 0.3034511784331333,
+    "ssl_auc": 0.3029223157318983,
+    "ssl_better": false
+  }
+}
