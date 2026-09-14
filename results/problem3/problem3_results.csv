@@ -1,0 +1,55 @@
+task,city,representation,reduction_method,dimension,downstream_model,seed,explained_variance,reconstruction_mse,balanced_accuracy,macro_f1,rmse,mae,nrmse,notes
+classification,Davis,raw,none,raw,random_forest,42,,,0.742118280348731,0.7342178292078222,,,,
+classification,Davis,raw,none,raw,random_forest,123,,,0.7413965889801412,0.7342546488626497,,,,
+classification,Davis,raw,none,raw,random_forest,2026,,,0.7457983736740657,0.7381941144231193,,,,
+classification,Davis,pca,pca,2,random_forest,42,,,0.40400551399639156,0.4095704668948068,,,,
+classification,Davis,pca,pca,2,random_forest,123,,,0.3994908270883292,0.40435926651815485,,,,
+classification,Davis,pca,pca,2,random_forest,2026,,,0.39984544683445317,0.4045127028672566,,,,
+classification,Davis,pca,pca,5,random_forest,42,,,0.5580751660390153,0.5511653221168877,,,,
+classification,Davis,pca,pca,5,random_forest,123,,,0.5576285440932297,0.5505012811528401,,,,
+classification,Davis,pca,pca,5,random_forest,2026,,,0.5614108766868796,0.5552812203070799,,,,
+classification,Davis,pca,pca,10,random_forest,42,,,0.5741625927326488,0.5811947050045337,,,,
+classification,Davis,pca,pca,10,random_forest,123,,,0.568991926851436,0.5735482387416789,,,,
+classification,Davis,pca,pca,10,random_forest,2026,,,0.5700856225432416,0.5757472272212993,,,,
+classification,Davis,autoencoder,autoencoder,2,random_forest,42,,,0.4591737640411076,0.4641380198163569,,,,
+classification,Davis,autoencoder,autoencoder,2,random_forest,123,,,0.4570295357397989,0.462534643442262,,,,
+classification,Davis,autoencoder,autoencoder,2,random_forest,2026,,,0.4545466550060923,0.45926859810025894,,,,
+classification,Davis,autoencoder,autoencoder,5,random_forest,42,,,0.5681831511993849,0.5604885219913819,,,,
+classification,Davis,autoencoder,autoencoder,5,random_forest,123,,,0.5674663383215296,0.5589504391480394,,,,
+classification,Davis,autoencoder,autoencoder,5,random_forest,2026,,,0.5675494352940608,0.5590089165927111,,,,
+classification,Davis,autoencoder,autoencoder,10,random_forest,42,,,0.6577236904738042,0.6423667453096021,,,,
+classification,Davis,autoencoder,autoencoder,10,random_forest,123,,,0.6653425533563825,0.6485319303221487,,,,
+classification,Davis,autoencoder,autoencoder,10,random_forest,2026,,,0.6587791557840573,0.6433657639507715,,,,
+regression,Davis,raw,none,raw,gradient_boosting,42,,,,,23.860340588884632,15.837190064436623,0.09438985932268384,
+regression,Davis,raw,none,raw,gradient_boosting,123,,,,,23.857857125189952,15.835924446940503,0.0943800349118419,
+regression,Davis,raw,none,raw,gradient_boosting,2026,,,,,23.85634615913887,15.834349208355869,0.09437405763450708,
+regression,Davis,pca,pca,2,gradient_boosting,42,,,,,44.85990228208029,35.126085467282344,0.17746267492960538,
+regression,Davis,pca,pca,2,gradient_boosting,123,,,,,44.86022100063875,35.12650231157014,0.1774639357582086,
+regression,Davis,pca,pca,2,gradient_boosting,2026,,,,,44.85990228208029,35.126085467282344,0.17746267492960538,
+regression,Davis,pca,pca,5,gradient_boosting,42,,,,,33.959433772203326,24.81992421677796,0.13434117440593124,
+regression,Davis,pca,pca,5,gradient_boosting,123,,,,,33.959433772203326,24.81992421677796,0.13434117440593124,
+regression,Davis,pca,pca,5,gradient_boosting,2026,,,,,33.959433772203326,24.81992421677796,0.13434117440593124,
+regression,Davis,pca,pca,10,gradient_boosting,42,,,,,32.095533725108,22.39265567755005,0.12696771456023104,
+regression,Davis,pca,pca,10,gradient_boosting,123,,,,,32.095533725108,22.39265567755006,0.12696771456023104,
+regression,Davis,pca,pca,10,gradient_boosting,2026,,,,,32.095533725108,22.392655677550056,0.12696771456023104,
+regression,Davis,autoencoder,autoencoder,2,gradient_boosting,42,,,,,41.931252667570114,31.3647164391507,0.16587713933805454,
+regression,Davis,autoencoder,autoencoder,2,gradient_boosting,123,,,,,41.92600146366363,31.36110316521481,0.16585636593810407,
+regression,Davis,autoencoder,autoencoder,2,gradient_boosting,2026,,,,,41.93797811910569,31.368737374509493,0.16590374475979863,
+regression,Davis,autoencoder,autoencoder,5,gradient_boosting,42,,,,,36.28823324084223,27.01620644643411,0.14355374425239723,
+regression,Davis,autoencoder,autoencoder,5,gradient_boosting,123,,,,,36.288844716087766,27.017812020901886,0.14355616320623363,
+regression,Davis,autoencoder,autoencoder,5,gradient_boosting,2026,,,,,36.28823324084224,27.01620644643411,0.14355374425239728,
+regression,Davis,autoencoder,autoencoder,10,gradient_boosting,42,,,,,29.688758402343996,21.88453307264302,0.1174466776206816,
+regression,Davis,autoencoder,autoencoder,10,gradient_boosting,123,,,,,29.688758402343993,21.88453307264302,0.11744667762068159,
+regression,Davis,autoencoder,autoencoder,10,gradient_boosting,2026,,,,,29.688758402344,21.88453307264302,0.11744667762068162,
+classification,Davis,pca,pca,5,random_forest,42,0.7611452657502797,0.1495499404717851,0.5580751660390153,0.5511653221168877,,,,feature_ablation=with_cloud_type
+classification,Davis,pca,pca,5,random_forest,123,0.7611452657502797,0.1495499404717851,0.5576285440932297,0.5505012811528401,,,,feature_ablation=with_cloud_type
+classification,Davis,pca,pca,5,random_forest,2026,0.7611452657502797,0.1495499404717851,0.5614108766868796,0.5552812203070799,,,,feature_ablation=with_cloud_type
+classification,Davis,pca,pca,5,random_forest,42,0.7868666416270247,0.19597443716361612,0.5177805742753623,0.5267486373722178,,,,feature_ablation=without_cloud_type
+classification,Davis,pca,pca,5,random_forest,123,0.7868666416270247,0.19597443716361612,0.5105874875341091,0.5211894904190894,,,,feature_ablation=without_cloud_type
+classification,Davis,pca,pca,5,random_forest,2026,0.7868666416270247,0.19597443716361612,0.5098959730742795,0.5183823330668914,,,,feature_ablation=without_cloud_type
+classification,Davis,raw,none,raw,mlp,42,,,0.7654450628534125,0.7433552730101584,,,,optional PCA+MLP comparison (Section 15)
+classification,Davis,raw,none,raw,mlp,123,,,0.7496932138165117,0.7336806111376152,,,,optional PCA+MLP comparison (Section 15)
+classification,Davis,raw,none,raw,mlp,2026,,,0.7505757093404174,0.7394648512456462,,,,optional PCA+MLP comparison (Section 15)
+classification,Davis,pca,pca,10,mlp,42,,,0.6059651259822901,0.5990815638294648,,,,optional PCA+MLP comparison (Section 15)
+classification,Davis,pca,pca,10,mlp,123,,,0.5972809553861468,0.5933148461312371,,,,optional PCA+MLP comparison (Section 15)
+classification,Davis,pca,pca,10,mlp,2026,,,0.6211254850199882,0.6097913274222817,,,,optional PCA+MLP comparison (Section 15)

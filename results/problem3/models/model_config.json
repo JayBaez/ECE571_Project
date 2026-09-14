@@ -1,0 +1,58 @@
+{
+  "pca_2": {
+    "type": "PCA",
+    "n_components": 2,
+    "file": "pca_2.joblib"
+  },
+  "pca_5": {
+    "type": "PCA",
+    "n_components": 5,
+    "file": "pca_5.joblib"
+  },
+  "pca_10": {
+    "type": "PCA",
+    "n_components": 10,
+    "file": "pca_10.joblib"
+  },
+  "autoencoder_2": {
+    "type": "SimpleAutoencoder",
+    "latent_dim": 2,
+    "hidden_size": 32,
+    "input_dim": 23,
+    "file": "autoencoder_2.pt"
+  },
+  "autoencoder_5": {
+    "type": "SimpleAutoencoder",
+    "latent_dim": 5,
+    "hidden_size": 32,
+    "input_dim": 23,
+    "file": "autoencoder_5.pt"
+  },
+  "autoencoder_10": {
+    "type": "SimpleAutoencoder",
+    "latent_dim": 10,
+    "hidden_size": 32,
+    "input_dim": 23,
+    "file": "autoencoder_10.pt"
+  },
+  "unified_feature_columns_pre_encoding": [
+    "Cloud Type",
+    "Dew Point",
+    "Surface Albedo",
+    "Wind Speed",
+    "Precipitable Water",
+    "Wind Direction",
+    "Relative Humidity",
+    "Temperature",
+    "Pressure",
+    "Hour_sin",
+    "Hour_cos",
+    "Month_sin",
+    "Month_cos",
+    "DayOfYear_sin",
+    "DayOfYear_cos"
+  ],
+  "city": "Davis",
+  "downstream_classifier": "random_forest (Problem 1 default config)",
+  "downstream_regressor": "gradient_boosting (Problem 2 default config)"
+}

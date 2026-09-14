@@ -416,6 +416,71 @@ the leakage effect explicitly in the report.
   the two sheets not sharing a test period — I'm reporting it honestly
   but flagging that it doesn't cleanly prove "less data is better."
 
+## Problem 3 — What I Learned
+
+- **What dimensionality reduction means:** squeezing many input
+  columns (23 in my case) down into just a few numbers per row (2, 5,
+  or 10), while trying to keep as much of the useful information as
+  possible.
+- **What PCA does:** finds the directions the data varies the most
+  along, and re-describes each row using coordinates along those
+  directions instead of the original columns. It's just geometry — it
+  never looks at any label.
+- **What explained variance means:** how much of the data's total
+  spread/variation is captured by the components you kept. 100% would
+  mean no information lost at all (using every original dimension).
+- **What reconstruction error means:** compress a row down, then try
+  to rebuild the original row from the compressed version — the
+  difference between the original and the rebuilt version is the
+  reconstruction error. Lower = the compression kept more.
+- **What an autoencoder does:** the neural-network version of PCA — it
+  learns to compress AND rebuild its own input, but because it can use
+  nonlinear functions (ReLU etc.), it can often compress more
+  efficiently than PCA can. I saw this directly: at every dimension I
+  tested, the autoencoder reconstructed better than PCA.
+- **What a latent/bottleneck representation is:** the small,
+  compressed version of the data sitting in the middle of the
+  autoencoder — the "2 numbers" (or 5, or 10) that everything else
+  gets squeezed through.
+- **Why the target can't be used when learning the representation:**
+  PCA and the autoencoder are supposed to learn "what the DATA looks
+  like," not "what makes the LABEL easy to predict" — using the label
+  would be a different (supervised) technique entirely, and would
+  make my downstream comparison meaningless (I'd be testing whether
+  cheating helps, not whether compression helps).
+- **Why a 2-D visualization isn't the same as a good predictive
+  representation:** my 2-D plots showed the three sky-condition
+  classes pretty mixed together — and sure enough, that's exactly
+  where classification accuracy was worst (PCA-2: only 0.40 balanced
+  accuracy, barely above random guessing at 0.33). A plot that "looks
+  like it has some structure" doesn't guarantee a model can actually
+  use that structure well.
+- **Why dimensionality reduction can hurt performance:** in my case,
+  it hurt BOTH downstream tasks, at every dimension I tried, even at
+  d=10 using almost half the original columns. I traced this partly to
+  Cloud Type — a category feature that turned out to compress poorly
+  into a small number of continuous dimensions, even though it's one
+  of the most useful features for predicting sky-condition.
+
+## Problem 3 — Things I Need To Explain To My Professor
+
+- Why raw features beat both PCA and the autoencoder at every
+  dimension I tried, for both classification and regression — and why
+  that's a legitimate, useful finding, not a failed experiment.
+- Why I excluded irradiance features (GHI etc.) from the shared PCA/
+  autoencoder input entirely, even though Problem 2's regression task
+  has no leakage restriction on them — to keep ONE representation
+  usable for both downstream tasks without reintroducing Problem 1's
+  leakage risk.
+- Why my Problem 3 "raw" regression baseline (RMSE 23.86) is worse
+  than Problem 2's original Davis result (RMSE 15.17) — same reason as
+  above, a deliberate, documented tradeoff, not an inconsistency.
+- The feature ablation showing Cloud Type actually matters even after
+  compression (removing it made both reconstruction AND downstream
+  accuracy worse, despite technically raising explained variance).
+- Why the autoencoder consistently beat PCA — its ability to learn
+  nonlinear encodings, not just a lucky architecture choice.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

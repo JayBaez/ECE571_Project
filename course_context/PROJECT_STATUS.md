@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Problem 2 completion (supervised regression).
+**Last updated:** Problem 3 completion (dimension reduction).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -11,13 +11,42 @@ Phase 2 — ML framework:                     COMPLETE
 Phase 3 — Dataset validation:                COMPLETE
 Problem 1 (Classification):                 COMPLETE
 Problem 2 (Regression):                     COMPLETE
-Problem 3 (Dimension Reduction):            NOT STARTED
+Problem 3 (Dimension Reduction):            COMPLETE
 Problem 4 (Semi-Supervised Learning):       NOT STARTED
 Problem 5 (Transfer Learning):              NOT STARTED
 Final optimization:                         NOT STARTED
 Report:                                     NOT STARTED
 Video presentation:                         NOT STARTED
 ```
+
+## Problem 3 summary
+
+- Built `problems/problem3_dimension_reduction/` (features.py,
+  reduction.py, run_experiments.py), reusing the Phase 2 framework and
+  Problem 1's leakage-safe feature set as ONE unified input for both
+  downstream tasks (documented tradeoff: Problem 3's "raw" regression
+  baseline is weaker than Problem 2's headline result, since
+  irradiance features are deliberately excluded here — see
+  `PROBLEM3_REPORT.md`, Section 4).
+- Ran PCA (d=2/5/10, plus extra values for a clear elbow curve) and a
+  small autoencoder (d=2/5/10, 3 seeds each) on Davis, then compared
+  raw vs. every reduced representation on both Problem 1's
+  sky-condition classifier and Problem 2's regressor — 54 real
+  experiment rows in `results/problem3/problem3_results.csv`, central
+  comparison table in `problem3_comparison_table.csv`.
+- **Finding: dimension reduction hurt both downstream tasks at every
+  tested dimension** (reported honestly, per the instructions'
+  explicit allowance for this outcome) — traced partly to Cloud Type
+  compressing poorly, confirmed via a small feature ablation. The
+  autoencoder consistently outperformed PCA at every dimension in both
+  reconstruction quality and downstream performance.
+- A sandbox filesystem reset (disk space exhaustion) occurred mid-
+  phase; `problems/problem3_dimension_reduction/` source was rebuilt
+  from scratch and re-run — results matched exactly (bit-for-bit
+  identical), confirming the rebuild was faithful.
+- Saved all 6 fitted models (3 PCA, 3 autoencoder), verified loadable.
+- **No fabricated numbers** — every result in
+  `course_context/PROBLEM3_REPORT.md` traces to an actual run.
 
 ## Problem 2 summary
 
