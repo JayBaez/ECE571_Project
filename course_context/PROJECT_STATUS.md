@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Phase 10 completion (final course project report).
+**Last updated:** Phase 11 completion (final presentation) — the entire ECE571 project is now COMPLETE.
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -17,8 +17,40 @@ Problem 5 (Transfer Learning):              COMPLETE
 Final audit:                                COMPLETE
 Final optimization:                         COMPLETE
 Final report:                               COMPLETE
-Presentation:                               NOT STARTED
+Presentation:                               COMPLETE
 ```
+
+## Phase 11 summary (final presentation)
+
+- Created `presentation/FINAL_PRESENTATION.pptx` (15 slides, ~11-14 min)
+  via a purpose-built `pptxgenjs` script (`presentation/
+  build_presentation.js`) — custom solar/energy color palette (navy +
+  solar gold + teal/terracotta accents), 5 real project figures
+  embedded directly (never recreated), 1 native comparison chart built
+  for content with no existing figure (the Problem 5 learning-rate
+  story), and a native cross-problem summary table.
+- **Every number verified against `results/FINAL_EXPERIMENT_TABLE.csv`
+  and the per-problem detail files twice** — once before writing slide
+  content, once by extracting every number that actually appears on
+  the built slides (via `markitdown`) and re-checking each against
+  source data. Zero discrepancies found either time.
+- Found and fixed two real layout bugs during visual QA (a translucent
+  shape rendering as flat gray; a navy insight box overlapping its
+  neighboring figure card on two slides) and one real content bug (a
+  numbered list losing its numbers) — all caught by actually rendering
+  and inspecting the slides, not assumed correct.
+- `scripts/office/validate.py` reports all checks passed; `markitdown`
+  content scan found no leftover placeholder text.
+- Created `presentation/PROFESSOR_QUESTIONS.md` (26 questions, 9
+  categories), `PRESENTATION_CHEAT_SHEET.md`, and `PRESENTATION_SCRIPT.md`
+  (the latter generated programmatically from the pptx's own embedded
+  speaker notes, guaranteeing the two never drift out of sync).
+- Speaker notes trimmed once after an initial word-count/pace check
+  ran over the 8-12 minute target; final estimate 11.3-14.0 minutes
+  depending on speaking pace — reported honestly rather than claimed
+  as precisely in-range.
+- **No new experiments, no changed results, no fabricated numbers** —
+  this phase was presentation design and verification only.
 
 ## Phase 10 summary (final report)
 

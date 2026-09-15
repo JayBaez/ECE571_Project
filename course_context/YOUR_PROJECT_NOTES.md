@@ -728,6 +728,52 @@ city case); what DIDN'T transfer automatically was the output scale,
 which needed either fine-tuning (Problem 5) or explicit correction to
 recover reasonable performance.
 
+## Presentation Preparation
+
+**30-second explanation:** I built a machine learning project that
+predicts solar power output using five different ML techniques —
+classification, regression, dimension reduction, semi-supervised
+learning, and transfer learning — on the same weather/irradiance
+dataset across five cities. My strongest result predicts power output
+with 95% accuracy (R²=0.953) using just weather data. I also found
+some techniques genuinely didn't help — dimension reduction hurt
+performance, and semi-supervised learning barely moved the needle —
+and I dug into why in both cases instead of hiding it.
+
+**1-minute explanation:** [30-second version, plus:] The most
+interesting part of the project happened in the transfer learning
+problem — I tried to use a data-rich city (Davis, 6 years of data) to
+help predict power for a data-poor city (Amherst, 3 years). My first
+attempt actually made things WORSE than not using Davis at all, which
+is called negative transfer. I dug into why, found it was because my
+fine-tuning learning rate was too small to adjust the model's output
+scale in time, fixed it, and transfer learning went from a failure to
+a 21% improvement. I think that process — finding a real problem,
+diagnosing the actual cause, and fixing it with evidence — is the
+best example of what I learned doing this project.
+
+- **Best result:** Davis same-city regression, RMSE=15.17 kW, R²=0.953.
+- **Most interesting result:** The Problem 5 learning-rate story — same
+  setup, severe failure (140.9 kW) or clear win (27.2 kW) depending
+  only on the fine-tuning learning rate.
+- **Biggest failure:** Dimension reduction hurt both downstream tasks
+  at every tested dimension — traced to Cloud Type compressing poorly.
+- **Biggest limitation:** Deliberately small hyperparameter searches
+  throughout — repeatedly found tuning barely moved results, but never
+  confirmed with a larger search.
+
+**5 concepts I need to understand before presenting:**
+1. Why chronological (not random) splitting matters for time-series data
+2. Why GHI must be excluded from sky-condition classification (it defines the label)
+3. What negative transfer means and how I found/fixed it in Problem 5
+4. Why 100%-accurate pseudo-labels still didn't help SSL (redundancy, not error)
+5. Why raw features beat every compressed representation in Problem 3
+
+**10 questions the professor is most likely to ask:** see
+`presentation/PROFESSOR_QUESTIONS.md` for the full list of 26,
+organized by category (General, Dataset, Problems 1-5,
+Reproducibility) — each with a short and a detailed answer.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods
