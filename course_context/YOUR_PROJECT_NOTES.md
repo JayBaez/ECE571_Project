@@ -545,6 +545,73 @@ the leakage effect explicitly in the report.
   instead of picking new ones — keeps this a fair, apples-to-apples
   comparison to something already established.
 
+## Problem 5 — What I Learned
+
+- **What transfer learning means:** using knowledge a model already
+  learned from one place (Davis) to help it learn faster/better
+  somewhere new (Amherst), instead of starting completely from
+  scratch every time.
+- **Source domain vs. target domain:** the source is where the model
+  learns first (Davis, lots of data) — the target is where it's
+  applied and adapted (Amherst, very little data).
+- **Zero-shot:** using the source-trained model directly on the
+  target, with ZERO target training at all. Mine failed badly
+  (RMSE=184 kW) — Davis's model just doesn't know Amherst's actual
+  power scale.
+- **Few-shot:** training a brand new model using only a tiny number of
+  target examples (I used 10, 50, 100), with no help from the source
+  city at all.
+- **Fine-tuning:** starting from the ALREADY-TRAINED source model
+  (not random weights) and continuing to train it a bit more, using
+  just the small amount of target data — this is the actual "transfer
+  learning" step.
+- **Why Davis can potentially help Amherst:** they're both PV
+  installations responding to weather/irradiance — the underlying
+  physics (more sun → more power) should be similar even if the exact
+  numbers differ.
+- **Why different cities create domain shift:** Davis and Amherst have
+  real climate differences (Davis is warmer and sunnier on average) —
+  I measured this directly and found Wind Speed had a huge difference,
+  which I flagged as possibly a sensor/data issue rather than assuming
+  it was a real climate fact.
+- **Why output-power scale matters so much:** Davis's plant produces
+  roughly 2.7x Amherst's average power. If you don't account for this,
+  a model "confidently" predicts numbers in completely the wrong range
+  for the new city.
+- **What negative transfer means:** when transfer learning actually
+  makes things WORSE than not using it at all. I found this directly —
+  my first attempt at fine-tuning (using a smaller learning rate, like
+  the instructions suggested) caused severe negative transfer, because
+  it couldn't adjust the output scale fast enough. Switching to a
+  larger learning rate fixed it completely.
+- **Why freezing layers can sometimes help:** the idea is that early
+  layers learn general patterns (how weather relates to power in
+  general) while later layers learn city-specific details — freezing
+  the early layers protects the general knowledge while still letting
+  the model adapt. In my case it made almost no difference either way,
+  which is itself a useful thing to know.
+
+## Problem 5 — Things I Need To Explain To My Professor
+
+- Why my FIRST fine-tuning attempt caused severe negative transfer,
+  and how I found and fixed the actual cause (learning rate, not a
+  deeper transfer-learning problem) instead of just reporting the bad
+  number or quietly changing my approach without explanation.
+- Why the target-normalization ablation showed normalization DIDN'T
+  help, once the real problem (learning rate) was already fixed —
+  an interesting result showing the two ablations pointed to different
+  root causes.
+- Why the transfer gain shrinks as k grows (10 → 50 → 100) — makes
+  sense, since the few-shot baseline gets progressively more capable
+  on its own as it sees more real Amherst data.
+- Why I flagged the Wind Speed domain-shift finding as possibly a
+  data/sensor issue rather than presenting it as a confirmed climate
+  fact — I don't have a way to verify this without checking the raw
+  instrument documentation for both cities.
+- Why the freezing ablation showed almost no difference — I explained
+  this as the model not needing much adaptation in the early layers,
+  not as the ablation "failing" to show anything.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

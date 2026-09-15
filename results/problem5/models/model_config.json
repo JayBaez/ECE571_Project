@@ -1,0 +1,32 @@
+{
+  "architecture": "TransferMLP: Dense(128) -> ReLU -> Dropout(0.2) -> Dense(64) -> ReLU -> Dense(1)",
+  "source_city": "Davis",
+  "target_city": "Amherst",
+  "pretraining": {
+    "lr": 0.001,
+    "batch_size": 64,
+    "max_epochs": 100,
+    "patience": 10,
+    "target": "raw kW"
+  },
+  "fine_tuning": {
+    "lr": 0.001,
+    "batch_size": "min(16, k)",
+    "epochs": 100,
+    "note": "same LR as pretraining - empirically justified, see PROBLEM5_REPORT.md Section on learning rate finding"
+  },
+  "k_values": [
+    10,
+    50,
+    100
+  ],
+  "seeds": [
+    42,
+    123,
+    2026
+  ],
+  "feature_set": "Problem 2 full regression feature set (includes irradiance - no leakage restriction for regression)",
+  "davis_pretrained_model.pt": "seed=42 Davis-pretrained model before any Amherst fine-tuning",
+  "fewshot_K.pt": "seed=42 fresh model trained only on K Amherst samples",
+  "transfer_K.pt": "seed=42 Davis-pretrained model fine-tuned on the SAME K Amherst samples as fewshot_K"
+}

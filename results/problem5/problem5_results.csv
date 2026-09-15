@@ -1,0 +1,28 @@
+source_city,target_city,method,target_samples,seed,target_normalization,frozen_layers,rmse,mae,nrmse,transfer_gain,transfer_gain_percent,notes
+Davis,Amherst,zero_shot,0,42,none,none,179.084524001455,102.6584494997307,1.4078972012693003,,,"Davis-pretrained model, zero Amherst training"
+Davis,Amherst,zero_shot,0,123,none,none,193.9377865864287,105.25115681101207,1.524668133541106,,,"Davis-pretrained model, zero Amherst training"
+Davis,Amherst,zero_shot,0,2026,none,none,179.5002089912393,103.67246988317079,1.4111651650254662,,,"Davis-pretrained model, zero Amherst training"
+Davis,Amherst,few_shot,10,42,none,none,36.79507931093969,30.51245062047641,0.28926949143820513,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,10,42,none,none,27.228743484746403,18.994920012175022,0.21406244877945285,9.566335826193288,25.998954222525846,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,10,123,none,none,38.101750488099036,32.80578515303179,0.29954206358568425,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,10,123,none,none,36.91073306531247,26.47402718243783,0.29017871906692194,1.1910174227865653,3.1258863635637315,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,10,2026,none,none,39.75201205769246,32.41376046674768,0.31251581806361994,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,10,2026,none,none,25.957650315018878,18.66717721723551,0.2040695779482616,13.794361742673583,34.701040346470265,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,50,42,none,none,25.483063492216374,19.361838625417416,0.20033854946710986,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,50,42,none,none,23.003341425824363,16.464362944177747,0.18084387913383934,2.4797220663920108,9.730863273756018,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,50,123,none,none,26.055087542308755,20.083963719545586,0.2048355938860751,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,50,123,none,none,23.6311126838478,16.87931402806077,0.18577918776609906,2.423974858460955,9.30326890871066,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,50,2026,none,none,22.626017217805085,16.62071818516018,0.1778774938506689,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,50,2026,none,none,23.426618310369783,15.477545266565572,0.18417152759724673,-0.8006010925646976,-3.5384092783889547,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,100,42,none,none,23.811264626301927,17.81339552339406,0.1871954766218705,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,100,42,none,none,23.370880400354736,16.75610364988541,0.18373333648077622,0.4403842259471915,1.8494785256417796,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,100,123,none,none,23.10836113585,16.935349589291178,0.18166950578498428,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,100,123,none,none,22.50379062062938,15.982731434199286,0.17691659292947626,0.6045705152206189,2.6162414187075185,fine-tuned from Davis-pretrained model
+Davis,Amherst,few_shot,100,2026,none,none,22.14610278853238,15.581038745959683,0.17410458167085205,,,"fresh model, Amherst-only"
+Davis,Amherst,transfer,100,2026,none,none,22.537923168227955,14.866525882878376,0.17718493056782983,-0.3918203796955737,-1.7692520595473114,fine-tuned from Davis-pretrained model
+Davis,Amherst,transfer,50,42,none,layer1_frozen,22.98428428450462,15.824953222879975,0.18069405884044512,,,freezing ablation - layer1 (128-unit) frozen during fine-tuning
+Davis,Amherst,transfer,50,123,none,layer1_frozen,23.781540973500114,16.531035348673868,0.18696180010613297,,,freezing ablation - layer1 (128-unit) frozen during fine-tuning
+Davis,Amherst,transfer,50,2026,none,layer1_frozen,23.434019808070875,15.645261689271535,0.1842297154722553,,,freezing ablation - layer1 (128-unit) frozen during fine-tuning
+Davis,Amherst,transfer,50,42,davis_and_amherst_normalized,none,23.68310952289265,17.249284100691145,0.18618796794726925,,,"normalization ablation - Davis pretrained on Davis-normalized target, fine-tuned on Amherst-k-sample-normalized target"
+Davis,Amherst,transfer,50,123,davis_and_amherst_normalized,none,24.761648658704637,17.71417884600721,0.1946670492036528,,,"normalization ablation - Davis pretrained on Davis-normalized target, fine-tuned on Amherst-k-sample-normalized target"
+Davis,Amherst,transfer,50,2026,davis_and_amherst_normalized,none,23.875190045432,16.126071222097238,0.18769803494836476,,,"normalization ablation - Davis pretrained on Davis-normalized target, fine-tuned on Amherst-k-sample-normalized target"

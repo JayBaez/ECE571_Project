@@ -1,0 +1,8 @@
+Method,Target Labels,RMSE,MAE,nRMSE
+Zero-Shot,0,184.17,103.86,1.4479
+Few-Shot,10,38.22,31.91,0.3004
+Transfer,10,30.03,21.38,0.2361
+Few-Shot,50,24.72,18.69,0.1944
+Transfer,50,23.35,16.27,0.1836
+Few-Shot,100,23.02,16.78,0.181
+Transfer,100,22.8,15.87,0.1793
