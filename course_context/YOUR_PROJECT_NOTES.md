@@ -612,6 +612,60 @@ the leakage effect explicitly in the report.
   this as the model not needing much adaptation in the early layers,
   not as the ablation "failing" to show anything.
 
+## Final Project Findings
+
+After finishing all 5 problems and a full audit, here's the overall
+picture in plain language:
+
+- **Strongest classification result:** predicting Davis's generation
+  regime (Low/Medium/High power) reached 0.95 balanced accuracy — the
+  strongest number anywhere in the project. Predicting sky-condition
+  (Clear/Partly Cloudy/Overcast) was harder (0.77-0.82), since I
+  deliberately excluded the strongest irradiance features to avoid
+  leaking the label's own definition.
+- **Strongest regression result:** same-city Davis power prediction,
+  RMSE=15.17 kW, explaining 95.3% of the variance (R²=0.953).
+- **What dimension reduction showed:** compressing my 23 features down
+  to even 10 dimensions HURT both classification and regression,
+  every time I tried it. The autoencoder did better than PCA at every
+  size (it can learn curved, not just straight-line, compression), but
+  neither one beat just using all the original features.
+- **Whether SSL helped:** no — pseudo-labeling came out slightly WORSE
+  than just using the labeled data alone, at every label amount I
+  tried (10%/30%/50%). But I found out why: the pseudo-labels were
+  100% correct, they just kept confirming the "easy" class (Clear
+  skies) instead of teaching the model anything new about the harder
+  classes.
+- **Whether transfer learning helped:** yes, clearly — using Davis to
+  help predict Amherst's power beat training on Amherst alone, at
+  every amount of Amherst data I tried, with the biggest help
+  (+21%) when Amherst data was scarcest (just 10 samples).
+- **Most interesting result:** in Problem 5, my very first attempt at
+  transfer learning actually made things WORSE, not better. I found
+  the exact cause (my fine-tuning learning rate was too small to let
+  the model adjust from Davis's power scale to Amherst's), fixed it,
+  and transfer learning went from a failure to a clear win.
+- **Most surprising result:** dimension reduction hurting performance
+  was genuinely unexpected going in — usually you'd hope compression
+  at least doesn't hurt. I traced part of the "why" to Cloud Type (a
+  categorical feature) compressing poorly even though it's one of the
+  most useful features I have.
+- **Biggest limitation:** I kept every hyperparameter search small on
+  purpose (3-5 options, not huge grids) — and found, repeatedly across
+  three different problems, that tuning barely changed anything. A
+  bigger search MIGHT find more, but I can't say for sure without
+  trying it, and I chose not to given the project's own "don't
+  overengineer" instructions.
+- **What I should emphasize in the report:** the fact that my results
+  are genuinely MIXED (transfer learning helped, dimension reduction
+  hurt, SSL was a wash) is actually the strongest thing about this
+  project — I didn't force every technique to "work," I tested them
+  fairly and reported what actually happened.
+- **What I should be prepared to explain to my professor:** the
+  negative-transfer story in Problem 5 (what went wrong, how I found
+  it, how I fixed it) is probably my best example of real scientific
+  process, and I should be ready to walk through it step by step.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Problem 5 completion (transfer learning) — all five required ML problems now COMPLETE.
+**Last updated:** Phase 9 completion (final audit, optimization review, and best-result selection).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -14,10 +14,41 @@ Problem 2 (Regression):                     COMPLETE
 Problem 3 (Dimension Reduction):            COMPLETE
 Problem 4 (Semi-Supervised Learning):       COMPLETE
 Problem 5 (Transfer Learning):              COMPLETE
-Final optimization:                         NOT STARTED
+Final audit:                                COMPLETE
+Final optimization:                         COMPLETE
 Report:                                     NOT STARTED
-Video presentation:                         NOT STARTED
+Presentation:                               NOT STARTED
 ```
+
+## Phase 9 summary (final audit)
+
+- Created `course_context/FINAL_AUDIT.md` — a full leakage audit (all
+  5 problems, SAFE), time-series split audit (SAFE), feature audit,
+  metric audit, and seed/reproducibility audit, all performed by
+  direct code inspection and live verification, not assumption.
+- **Reran 5 representative experiments (one per problem) and matched
+  every saved result exactly** — the strongest reproducibility
+  evidence the project could offer (`FINAL_AUDIT.md`, Section 10).
+- Determined, after auditing each problem's actual results against
+  the grading rubric, that **none of the 5 problems needed new
+  optimization experiments** — every problem's existing results were
+  already strong, honestly investigated, and (where something looked
+  weak, e.g. Problem 4's SSL gain or Problem 5's original negative
+  transfer) already resolved with evidence during that problem's own
+  phase. No new model training was performed this phase.
+- Built the cross-problem deliverables: `results/FINAL_EXPERIMENT_TABLE.csv`
+  / `FINAL_RESULTS.csv` / `FINAL_RESULTS.json` (30-row master table),
+  `results/BEST_RESULTS.md`, `course_context/CLAIMS_TO_AVOID.md`,
+  `course_context/PROJECT_STORY.md`, `course_context/
+  FINAL_FIGURE_INVENTORY.md`, `course_context/FINAL_TABLE_INVENTORY.md`,
+  `course_context/REPRODUCIBILITY_CHECKLIST.md`.
+- Rewrote `README.md` (was still Phase-2-vintage, describing an empty
+  framework with "no ML problems solved yet") to reflect all 5
+  complete problems, and removed one confirmed-unused dependency
+  (`tqdm`) from `requirements.txt`.
+- **No fabricated numbers, no methodology changes** — every claim in
+  `FINAL_AUDIT.md` and `BEST_RESULTS.md` traces to an existing result
+  or a fresh rerun performed live this phase.
 
 ## Problem 5 summary
 
