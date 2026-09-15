@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Phase 11 completion (final presentation) — the entire ECE571 project is now COMPLETE.
+**Last updated:** Report revision (more detailed structure, per updated report instructions) — the entire ECE571 project remains COMPLETE.
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -16,9 +16,45 @@ Problem 4 (Semi-Supervised Learning):       COMPLETE
 Problem 5 (Transfer Learning):              COMPLETE
 Final audit:                                COMPLETE
 Final optimization:                         COMPLETE
-Final report:                               COMPLETE
+Final report:                               COMPLETE (revised)
 Presentation:                               COMPLETE
 ```
+
+## Report revision summary
+
+- `report/FINAL_REPORT.md` and `report/FINAL_REPORT.docx` were
+  rewritten with a more detailed structure (explicit Objective/
+  Methods/Results/Discussion-style subsections within each of the 5
+  problem sections, a Title Page, and a dedicated Key Findings section
+  with Claim/Evidence/Interpretation per finding) — same underlying
+  numbers and findings as the original report, reorganized into a
+  more granular format. Went through a draft-then-approval step first
+  (`report/FINAL_REPORT_DRAFT.md`, `REPORT_FACT_CHECK.md`,
+  `REPORT_SUMMARY.md` — all later removed/superseded once the draft
+  was approved and promoted).
+- **Caught and corrected a real error during the draft's own
+  fact-check**: 6 nRMSE values in the Problem 2 results table had been
+  manually approximated rather than read directly from the results
+  file — all off by roughly 0.0002–0.0009. Re-derived every value
+  directly from `results/problem2/problem2_results.csv` and corrected
+  all 6 before finalizing.
+- **Avoided repeating a likely past error**: an earlier project
+  artifact (the presentation title slide) used "Prof. Puchovsky" as a
+  placeholder — that name does not appear anywhere in this project's
+  actual files and was almost certainly carried over incorrectly from
+  an unrelated course context. This report uses a clean
+  `[PROFESSOR NAME]` placeholder instead. The presentation slide
+  likely still needs this same correction.
+- New length: 19 pages (up from 14), reflecting the more granular
+  requested structure — reported honestly, not trimmed without being
+  asked, since the additional detail was the explicit point of this
+  revision.
+- Two real bugs caught and fixed during the docx conversion itself
+  (title-page fields running together on one line; multi-line
+  reference citations losing italic formatting) — both fixed and
+  re-verified via rendered-page inspection.
+- **No changes to any result, metric, or experiment** — this was a
+  report-writing and formatting pass only.
 
 ## Phase 11 summary (final presentation)
 

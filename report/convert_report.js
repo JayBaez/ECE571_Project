@@ -134,12 +134,19 @@ while (i < lines.length) {
   // Numbered list items (Introduction's 5 paradigms, References section): "1. text"
   const numMatch = line.match(/^(\d+)\.\s(.+)/);
   if (numMatch) {
+    let refBuffer = [numMatch[2]];
+    i++;
+    while (i < lines.length && lines[i].trim() !== "" && !lines[i].match(/^##|^###|^!\[|^\|/) && !lines[i].match(/^\d+\.\s/)) {
+      refBuffer.push(lines[i].trim());
+      i++;
+    }
+    const refText = refBuffer.join(" ");
     children.push(new Paragraph({
-      children: [new TextRun({ text: `${numMatch[1]}. `, bold: false }), ...parseInline(numMatch[2])],
+      children: [new TextRun({ text: `${numMatch[1]}. `, bold: false }), ...parseInline(refText)],
       spacing: { after: 80, line: 252, lineRule: "auto" },
       indent: { left: 360, hanging: 360 },
     }));
-    i++; continue;
+    continue;
   }
 
   // Plain paragraph text: accumulate consecutive non-blank, non-special
@@ -148,7 +155,7 @@ while (i < lines.length) {
   let buffer = [line];
   i++;
   while (i < lines.length && lines[i].trim() !== "" && !lines[i].match(/^##|^###|^!\[|^\|/) && !lines[i].match(/^\d+\.\s/)) {
-    buffer.push(lines[i]);
+    buffer.push(lines[i].trim());
     i++;
   }
   const paragraphText = buffer.join(" ");

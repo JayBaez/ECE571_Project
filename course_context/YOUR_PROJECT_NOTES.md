@@ -774,6 +774,23 @@ best example of what I learned doing this project.
 organized by category (General, Dataset, Problems 1-5,
 Reproducibility) — each with a short and a detailed answer.
 
+## Report Revision — Important Note
+
+- `report/FINAL_REPORT.md`/`.docx` were rewritten with a more detailed
+  structure (explicit subsections per problem, a Title Page, a
+  dedicated Key Findings section) — same facts and numbers as before,
+  just reorganized to be more thorough. It's now 19 pages instead of
+  14, which reflects the extra requested detail, not padding.
+- **Action item for me:** the title page currently has `[YOUR NAME]`,
+  `[PROFESSOR NAME]`, and `[DATE]` as placeholders — none of these are
+  recorded anywhere in the project, so I need to fill them in myself
+  before submitting.
+- **Double-check the presentation too:** I noticed the presentation's
+  title slide guessed "Prof. Puchovsky" as the professor's name — that
+  name isn't actually documented anywhere in this ECE571 project (it
+  looks like it was mistakenly pulled from an unrelated course). I
+  should fix that slide with the correct name too, not just the report.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods
