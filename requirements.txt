@@ -1,9 +1,8 @@
 # Recommended Python version: 3.11 or 3.12
 #
-# Every package below is used by src/ or is needed for a method named
-# in course_context/ML_METHOD_MAP.md. Nothing speculative is included
-# yet - e.g. umap-learn (Problem 3, optional visualization) will be
-# added when Problem 3 actually needs it, not now.
+# Every package below is used by src/ or a problemN_*/ module. Problem
+# 3's t-SNE visualization used scikit-learn's built-in
+# sklearn.manifold.TSNE - no separate UMAP package was needed.
 #
 # Versions below are minimum-compatible ranges, not exact pins to one
 # machine's install - exact pinning to a single sandbox environment's
@@ -36,7 +35,3 @@ seaborn>=0.12
 
 # Configuration files (src/experiment_runner.py)
 PyYAML>=6.0
-
-# Progress bars for longer training loops (readability, not required
-# for correctness - safe to remove if you'd rather not use it)
-tqdm>=4.65

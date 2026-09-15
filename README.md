@@ -4,65 +4,94 @@
 
 This project uses a real-world solar irradiance and photovoltaic (PV)
 output dataset covering 5 cities (Amherst MA, Davis CA, Huron SD,
-Santa Barbara CA, La Jolla CA) to explore five different machine
-learning paradigms. The dataset and full project spec are summarized
-in `course_context/` — see especially `TEACHER_EXPECTATIONS.md` for
-the exact requirements and grading rubric.
+Santa Barbara CA, La Jolla CA) to explore five machine learning
+paradigms. The dataset and full project spec are summarized in
+`course_context/` — see especially `TEACHER_EXPECTATIONS.md` for the
+exact requirements/grading rubric and `PROJECT_STORY.md` for a concise
+summary of what was found.
 
-## 2. The five problems
+**All five required ML problems are complete.** See
+`course_context/PROJECT_STATUS.md` for the up-to-date tracker and
+`results/BEST_RESULTS.md` for the headline result of each problem.
 
-1. **Supervised Classification** — predict a sky-condition or
-   generation-regime category from weather features.
-2. **Supervised Regression** (core task) — predict continuous PV
-   Output Power, same-city, cross-city, and as a short-term forecast.
-3. **Dimension Reduction** — compress features to 2/5/10 dimensions
-   and measure whether that helps or hurts Problems 1 and 2.
-4. **Semi-Supervised Learning** — learn from a small labeled fraction
-   (10%/30%/50%) plus a larger unlabeled pool.
-5. **Transfer Learning** — use data-rich Davis to help data-scarce
-   Amherst.
+## 2. The five problems (all complete)
+
+1. **Supervised Classification** (`problems/problem1_classification/`)
+   — sky-condition and generation-regime classifiers. Best result:
+   0.77-0.95 balanced accuracy depending on task/city. See
+   `course_context/PROBLEM1_REPORT.md`.
+2. **Supervised Regression** (`problems/problem2_regression/`, core
+   task) — same-city, cross-city, and K=12 sequence forecasting of
+   Output Power. Best result: RMSE=15.17 kW (Davis, same-city). See
+   `course_context/PROBLEM2_REPORT.md`.
+3. **Dimension Reduction** (`problems/problem3_dimension_reduction/`)
+   — PCA and an autoencoder at d=2/5/10, compared against raw features
+   on both downstream tasks. Finding: raw features won at every
+   dimension. See `course_context/PROBLEM3_REPORT.md`.
+4. **Semi-Supervised Learning** (`problems/problem4_semi_supervised/`)
+   — pseudo-labeling and Label Spreading at 10%/30%/50% labels.
+   Finding: SSL gain was slightly negative at every fraction (with a
+   clear, evidence-based explanation). See
+   `course_context/PROBLEM4_REPORT.md`.
+5. **Transfer Learning** (`problems/problem5_transfer_learning/`) —
+   Davis→Amherst zero-shot/few-shot/transfer for Output Power. Finding:
+   transfer beat few-shot at every k, most strongly at k=10 (+21.4%
+   RMSE). See `course_context/PROBLEM5_REPORT.md`.
 
 Full detail on each problem, including exact label definitions,
 required metrics, and known risks, is in
 `course_context/TEACHER_EXPECTATIONS.md` and
-`course_context/EXPERIMENT_PLAN.md`.
+`course_context/EXPERIMENT_PLAN.md`. `course_context/FINAL_AUDIT.md`
+(Phase 9) documents a full leakage/reproducibility audit across all
+five; `course_context/CLAIMS_TO_AVOID.md` lists conclusions the
+experiments do NOT support.
 
 ## 3. Current project status
 
-**Phase 2 (this stage) is complete: the reusable ML experimentation
-framework exists, is fully tested (79/79 tests passing), and has been
-proven end-to-end with a framework demo. No ML problems have been
-solved with real project data yet.** See
-`course_context/PROJECT_STATUS.md` for the up-to-date tracker.
+**All 5 ML problems are COMPLETE, audited (Phase 9), and
+reproducible** — 5 representative experiments (one per problem) were
+independently rerun during the Phase 9 audit and matched saved results
+exactly. The final written report and presentation have not yet been
+created. See `course_context/PROJECT_STATUS.md` for the detailed
+tracker.
 
 ## 4. Repository structure
 
 ```
 .
 ├── course/                  Course PowerPoints/PDFs + the raw Excel dataset
-├── course_context/          Knowledge base (read this first)
-├── data/                    Cached/processed data (empty for now — see data/README.md)
+├── course_context/          Knowledge base — READ THIS FIRST, especially
+│                             PROJECT_STORY.md and the 5 PROBLEMN_REPORT.md files
 ├── src/                     Reusable framework code (see Architecture below)
+├── problems/                One folder per problem, each with its own
+│   ├── problem1_classification/     features.py, models.py, targets.py, run_experiments.py
+│   ├── problem2_regression/         features.py, models.py, sequence.py, run_experiments.py
+│   ├── problem3_dimension_reduction/ features.py, reduction.py, run_experiments.py
+│   ├── problem4_semi_supervised/    pseudo_labeling.py, run_experiments.py
+│   └── problem5_transfer_learning/  models.py, run_experiments.py
+├── results/                 Per-problem results CSVs, saved models, plus
+│   ├── problem1/ .. problem5/       problemN_results.csv, models/, etc.
+│   ├── FINAL_EXPERIMENT_TABLE.csv   master table spanning all 5 problems
+│   ├── FINAL_RESULTS.csv/.json      same data, alternate format
+│   └── BEST_RESULTS.md              headline result + justification, per problem
+├── figures/                 Saved plots, one subfolder per problem (+ eda/)
 ├── configs/                 YAML experiment configs
-├── problems/                One folder per problem — not yet implemented
-├── results/                 experiment_history.csv, per-problem/demo results
-├── figures/                 Saved plots, one subfolder per problem/demo
-├── models/                  Saved trained models (empty for now)
-├── logs/                    Run logs (empty for now)
 ├── scripts/
-│   ├── check_setup.py       Basic environment/framework validation script
-│   └── framework_demo.py    Tiny end-to-end pipeline demo (NOT a project result)
-├── tests/                   Unit tests for every src/ module (pytest)
+│   ├── check_setup.py       Environment/framework validation script
+│   ├── run_eda.py           Phase 3 exploratory data analysis script
+│   └── framework_demo.py    Tiny synthetic-data pipeline demo (NOT a project result)
+├── tests/                   Unit tests for every src/ module (pytest) — 81 tests
 ├── requirements.txt
 ├── requirements-dev.txt     Extra packages needed only to run the test suite
 ├── pytest.ini
 └── .gitignore
 ```
 
-## 5. Framework architecture (Phase 2)
+## 5. Framework architecture
 
 The pipeline flows one direction, and every "fit" step only ever sees
-training data:
+training data — this is the shared foundation every one of the 5
+problems builds on:
 
 ```
 Excel file (course/*.xlsx)
@@ -89,20 +118,21 @@ Predictions
 share `.fit(X, y)` / `.predict(X)` for free — wrapping them would only
 add indirection. PyTorch doesn't give you that for free, so
 `torch_utils.py` provides just the missing piece (a training loop with
-early stopping and checkpointing) that works with *any* `nn.Module` a
-later phase defines — no custom model hierarchy needed.
+early stopping and checkpointing) that works with *any* `nn.Module`
+each problem defines — proven across 5 different network architectures
+(P1's classifier MLP, P2's regressor MLP and GRU, P3's autoencoder,
+P5's transfer MLP) with zero changes to the shared training loop.
 
-**Leakage protection, concretely:**
+**Leakage protection, concretely (audited in full in
+`course_context/FINAL_AUDIT.md`, Section 8):**
 - Preprocessing: `fit_*()` functions take a training DataFrame only;
-  `apply_*()` functions take an already-fitted object. There's no
-  function that fits on combined or test-only data.
-- Splitting: `chronological_split()` never shuffles and returns exactly
-  which rows/timestamp ended up on each side; `verify_no_overlap()`
-  can double-check any split.
-- Target/feature separation: `prepare_xy()` makes "what's a feature"
-  an explicit, loggable list — so a leakage-risk column (e.g. `GHI`
-  when predicting the sky-condition label derived from it) has to be
-  deliberately excluded, not accidentally included.
+  `apply_*()` functions take an already-fitted object.
+- Splitting: `chronological_split()` never shuffles and returns
+  exactly which rows/timestamps ended up on each side.
+- Target/feature separation: each problem's `features.py` makes "what's
+  a feature" an explicit, documented list — leakage-risk columns
+  (e.g. `GHI` when predicting the sky-condition label derived from it)
+  are deliberately excluded, not accidentally included.
 
 ## 6. How to create/install the Python environment
 
@@ -122,7 +152,10 @@ pip install -r requirements.txt
 `requirements.txt` may give you a CPU-only build depending on your
 system. For CUDA acceleration, instead run the install command
 generated for your system at
-https://pytorch.org/get-started/locally/.
+https://pytorch.org/get-started/locally/. Every neural network in this
+project was developed and validated on CPU (no GPU in the development
+sandbox) — `src/utils.py`'s `get_device()` will automatically switch
+to CUDA with no code changes once you run it on a CUDA-capable machine.
 
 ## 7. How to verify the installation
 
@@ -130,10 +163,10 @@ https://pytorch.org/get-started/locally/.
 python scripts/check_setup.py
 ```
 
-This checks that all packages import, all `src/` modules import, the
-Excel dataset can be found and opened, a sheet can be loaded, random
-seeds are reproducible, and GPU detection runs — without training any
-model. Every check should print `[PASS]`.
+Checks that all packages import, all `src/` modules import, the Excel
+dataset can be found and opened, a sheet can be loaded, random seeds
+are reproducible, and GPU detection runs — without training any model.
+Every check should print `[PASS]` (7/7).
 
 ## 8. How to run the test suite
 
@@ -142,76 +175,84 @@ pip install -r requirements-dev.txt
 pytest tests/
 ```
 
-This runs 79 tests covering every `src/` module: data loading (happy
-path and error cases), cleaning (including a regression test against
-the real, known 4-missing-row Amherst finding), preprocessing
-(explicitly checking a scaler is fit on train data only, not
-combined), splitting (order preservation, zero overlap, reproducible
-random sampling), evaluation (hand-verified metric values), the
-results/leaderboard system (including a test for the exact CSV-schema
-bug found and fixed during this phase), and the PyTorch training loop
-(loss decreasing, early stopping triggering correctly). All 79 should
-pass.
+81 tests covering every `src/` module: data loading, cleaning,
+feature engineering, preprocessing (explicitly checking a scaler is
+fit on train data only), splitting (order preservation, zero overlap,
+reproducible sampling), evaluation (hand-verified metric values,
+including the R² addition made during Problem 2), the results/
+leaderboard system, and the PyTorch training loop (loss decreasing,
+early stopping, and the classification `y_dtype` support added during
+Problem 1).
 
-## 9. How to run the framework demonstration
+## 9. How to run each problem
+
+Each problem's experiments are driven from its own
+`run_experiments.py`, which imports shared functions from `src/` and
+(where applicable) from earlier problems' modules — e.g. Problem 5
+reuses Problem 2's exact dataset-building functions, and Problem 4
+reuses Problem 1's exact dataset build, to guarantee identical splits.
 
 ```bash
-python scripts/framework_demo.py
+# From the project root, with the venv active:
+python problems/problem1_classification/run_experiments.py
+python problems/problem2_regression/run_experiments.py
+python problems/problem3_dimension_reduction/run_experiments.py
+python problems/problem4_semi_supervised/run_experiments.py
+python problems/problem5_transfer_learning/run_experiments.py
 ```
 
-This runs the entire pipeline above — load, clean, engineer features,
-split, preprocess, train, evaluate, save — on a small synthetic
-dataset with a plain Linear Regression model. **This is a framework
-test, not a project result:** it proves the pipeline works end-to-end,
-using made-up data and a deliberately simple model. Its output is
-saved under `results/framework_demo/` and `figures/framework_demo/`,
-clearly separate from any real Problem 1–5 results.
+**Note:** during development, each script's stages were run as several
+smaller invocations (rather than one continuous run) to stay within
+the development sandbox's per-command execution-time limit — this is
+documented in each problem's own report and does not affect result
+validity (Phase 9's audit independently reran one representative
+experiment per problem and matched saved results exactly — see
+`course_context/FINAL_AUDIT.md`, Section 10). Running the full script
+top-to-bottom on your own machine is expected to work but may take
+longer in a single sitting than the individual functions did when run
+separately.
 
-## 10. How experiments will eventually be run
+## 10. Where results are stored
 
-Each problem will get its own runner script inside its
-`problems/problemN_*/` folder. That script will:
+- `results/problemN/problemN_results.csv` — every experiment for that
+  problem, one row per (model, seed, ...) — never overwritten, only
+  appended.
+- `results/problemN/models/` — saved fitted models (`.joblib` for
+  scikit-learn, `.pt` for PyTorch state dicts) and preprocessing
+  objects, all verified loadable.
+- `results/FINAL_EXPERIMENT_TABLE.csv` / `FINAL_RESULTS.csv` /
+  `FINAL_RESULTS.json` — one master table spanning all 5 problems
+  (Phase 9), ready to use directly when writing the final report.
+- `results/BEST_RESULTS.md` — the selected headline result for each
+  problem, with justification.
+- `results/experiment_history.csv` — every experiment ever run across
+  every problem, queryable via `src/experiment_runner.py`'s
+  `get_leaderboard()`.
 
-1. Load a config with `experiment_runner.load_config()` (see
-   `configs/example_config.yaml` for the shape).
-2. Use `data_loader`, `cleaning`, `feature_engineering`, and
-   `splitting` to prepare data.
-3. Use `preprocessing.fit_preprocessor()` / `apply_preprocessor()` /
-   `prepare_xy()` to get train/test X and y.
-4. Train a model (problem-specific code — a scikit-learn estimator, or
-   a PyTorch model trained via `torch_utils.train_torch_model()`).
-5. Use `evaluation.py` to compute metrics (aggregated across seeds
-   with `aggregate_across_seeds()` where the spec requires it) and
-   `visualization.py` to save plots.
-6. Use `experiment_runner.create_experiment_dir()` +
-   `save_metrics_json()` / `save_experiment_config()` /
-   `save_predictions_csv()` to save full artifacts, and
-   `save_result()` to append the summary row.
+## 11. Where figures are stored
 
-## 11. How results are stored
+`figures/problemN/` (one subfolder per problem) and `figures/eda/`
+(Phase 3 exploratory analysis). `course_context/
+FINAL_FIGURE_INVENTORY.md` (Phase 9) catalogs every figure across the
+whole project with a MUST INCLUDE / OPTIONAL recommendation for the
+final report.
 
-- `results/experiment_history.csv` — every experiment ever run, one
-  row each, never overwritten.
-- `results/problemN/EXPERIMENT_ID/` — full artifacts per experiment:
-  `metrics.json`, `config.yaml`, `predictions.csv`, and
-  `training_log.csv` for neural network runs.
-- `experiment_runner.get_leaderboard(metric="rmse")` — queries
-  `experiment_history.csv` on demand and returns the best results,
-  correctly sorted for whichever metric you ask about (lower-is-better
-  metrics like RMSE sort ascending, higher-is-better metrics like
-  balanced accuracy sort descending). Pass `save_to=...` to also save
-  a snapshot to a file.
+## 12. Reproducibility information
 
-**Only one row currently exists in `results/experiment_history.csv`:
-the framework demo (clearly labeled, not a real result). No number
-anywhere in this repository represents an actual Problem 1–5 finding
-yet.**
+See `course_context/REPRODUCIBILITY_CHECKLIST.md` (Phase 9) for the
+full checklist. In brief: fixed seeds `[42, 123, 2026]` used
+identically across every problem; every preprocessing/scaling step is
+fit on training data only (audited, `FINAL_AUDIT.md` Section 8); every
+hyperparameter search result is saved; 5 representative experiments
+(one per problem) were independently rerun during the Phase 9 audit
+and matched saved results exactly.
 
-## 12. Using Git/GitHub Desktop
+## 13. Using Git/GitHub Desktop
 
 This repo is managed with GitHub Desktop. After AI-assisted changes
 (Claude Code or otherwise) are made to the repository, review the diff
 in GitHub Desktop before committing — that's the right point to catch
 anything you don't understand or agree with. Commit messages should
 briefly describe what phase/problem the change belongs to. AI agents
-working in this repo are instructed not to commit or push on their own — see `course_context/AI_AGENT_INSTRUCTIONS.md`.
+working in this repo are instructed not to commit or push on their
+own — see `course_context/AI_AGENT_INSTRUCTIONS.md`.
