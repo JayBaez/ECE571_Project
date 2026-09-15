@@ -666,6 +666,68 @@ picture in plain language:
   it, how I fixed it) is probably my best example of real scientific
   process, and I should be ready to walk through it step by step.
 
+## Final Report — Things I Need To Know
+
+- **The main project story:** I tested five ML paradigms on the same
+  PV forecasting problem and reported honestly which ones helped.
+  Supervised learning worked great, transfer learning clearly helped,
+  but dimension reduction hurt and semi-supervised learning was a
+  wash — and I can explain WHY in each case, not just report the
+  numbers.
+- **Strongest result:** same-city Davis regression, RMSE=15.17 kW,
+  R²=0.953 — predicts 95% of the variance in Output Power from
+  weather alone.
+- **Weakest result:** raw-kW cross-city zero-shot transfer (Problem 2
+  and the start of Problem 5) — RMSE around 125-184 kW. But I can
+  explain this isn't a modeling failure, it's almost entirely a scale
+  mismatch (Davis's plant is ~2.7x Amherst's average size).
+- **Most interesting finding:** in Problem 5, the exact same setup
+  produced severe negative transfer OR a clear win depending only on
+  the fine-tuning learning rate. I found this, diagnosed it, and
+  fixed it — a real example of the scientific process, not just a
+  lucky good result.
+- **Biggest limitation:** I kept every hyperparameter search small on
+  purpose, and found repeatedly (Problems 1, 2, 4) that tuning barely
+  changed results — worth mentioning honestly rather than implying I
+  found the absolute best possible model.
+
+**If the professor asks "Why did you choose this model?"** — For each
+problem I compared several models on the SAME data/split/seeds and
+picked whichever won on the primary metric (never picked in advance).
+Several times a simpler model won (logistic regression beat every
+ensemble for Davis sky-condition; untuned gradient boosting beat
+tuned versions in Problem 2) — I can point to the actual numbers.
+
+**If the professor asks "How did you prevent leakage?"** — Three
+things: (1) any feature that could reconstruct or define a label was
+excluded (GHI/Clearsky GHI/DHI/DNI/Solar Zenith Angle for
+sky-condition — I proved this mattered by testing WITH them, accuracy
+jumped to ~0.98); (2) every scaler/encoder was fit on training data
+only, never test data; (3) for SSL and transfer learning, I checked
+directly that hidden/target labels never entered training — I even
+ran a full audit phase re-verifying this programmatically, not just
+by reading my own code.
+
+**If the professor asks "Why did you use chronological splitting?"**
+— Because this is time-series data — randomly shuffling before
+splitting would let the model "see the future" (train on next
+Tuesday's readings, get tested on last Monday's), which would make
+every metric optimistic and meaningless for real forecasting. First
+80% of a city's timestamps = train, last 20% = test, always.
+
+**If the professor asks "What did SSL actually do?"** — It didn't
+help. I proved the pseudo-labels were 100% accurate (checked against
+hidden true labels, after training only) but they mostly reinforced
+the easy "Clear" class instead of helping with the hard classes — so
+"correct but redundant," not "wrong."
+
+**If the professor asks "What transferred between cities?"** — The
+underlying weather-to-power relationship transferred well (confirmed
+by a diagnostic rescaling that recovered R²=0.55-0.84 for the cross-
+city case); what DIDN'T transfer automatically was the output scale,
+which needed either fine-tuning (Problem 5) or explicit correction to
+recover reasonable performance.
+
 ## Notes About the Grading Rubric
 
 - 100 pts total: Correctness & reproducibility (20) · Breadth of methods

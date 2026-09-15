@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** Phase 9 completion (final audit, optimization review, and best-result selection).
+**Last updated:** Phase 10 completion (final course project report).
 **Future AI agents: update this file as the project progresses. Keep
 entries short — status + one-line note, not a log of everything done.**
 
@@ -16,9 +16,38 @@ Problem 4 (Semi-Supervised Learning):       COMPLETE
 Problem 5 (Transfer Learning):              COMPLETE
 Final audit:                                COMPLETE
 Final optimization:                         COMPLETE
-Report:                                     NOT STARTED
+Final report:                               COMPLETE
 Presentation:                               NOT STARTED
 ```
+
+## Phase 10 summary (final report)
+
+- Created `report/FINAL_REPORT.md` (the full 14-section course report)
+  and `report/FINAL_REPORT.docx` (converted via a purpose-built
+  markdown-to-docx script, `report/convert_report.js`, rather than
+  manually retyping content — chosen specifically to avoid
+  transcription risk on a report full of precise verified numbers).
+- **Every number in the report was individually verified against
+  saved results** (`results/FINAL_EXPERIMENT_TABLE.csv`, each
+  problem's own results CSV, and the per-class/error-analysis/
+  domain-shift detail files) — cross-checked once before writing and
+  again after all editing passes, including a final spot-check
+  focused on the most heavily-edited sections.
+- 10 figures and 5 tables included, spanning all 5 problems plus one
+  dataset-motivation figure; every figure has a numbered caption.
+- Report length: 14 pages total (~13 pages of main content, excluding
+  References) — above the 8-12 page target despite two rounds of
+  prose trimming and layout tightening; the shortfall reflects the
+  genuinely required content (5 full problem write-ups, 10 figures,
+  5 tables) more than padding, and is reported honestly rather than
+  hidden.
+- Caught and fixed two real bugs in the conversion script during
+  development: paragraph-per-source-line bloat (26 pages before the
+  fix) and numbered-list items silently losing their numbers.
+- AI assistance disclosure included (Section 15), accurately
+  describing the project's actual AI-assisted workflow.
+- **No new experiments, no changed results, no fabricated numbers or
+  citations** — this phase was writing and verification only.
 
 ## Phase 9 summary (final audit)
 
