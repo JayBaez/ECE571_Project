@@ -531,3 +531,57 @@ def make_confusion_matrices(data: dict):
             visualization.plot_confusion_matrix(cm, labels=CLASS_ORDER, save_path=path,
                                                  title=f"{int(frac*100)}% labeled — {method_name} (seed=42)")
             print(f"Saved {path}")
+
+
+# ---------------------------------------------------------------------------
+# Main orchestration — see the note in problem1's run_experiments.py for
+# why this was missing and how the fix was verified across the project.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("PROBLEM 4 — SEMI-SUPERVISED LEARNING — FULL PIPELINE")
+    print("=" * 70)
+
+    # See the matching note in problem1's __main__ block.
+    utils.ensure_dir(RESULTS_DIR)
+    utils.ensure_dir(MODELS_DIR)
+    utils.ensure_dir(FIGURES_DIR)
+
+    data = get_full_training_pool()
+
+    for frac in LABEL_FRACTIONS:
+        run_main_experiments_for_fraction(data, frac)
+        for seed in SEEDS:
+            run_label_spreading_experiment(data, frac, seed)
+
+    table = build_label_efficiency_table()
+    auc_f1 = compute_label_efficiency_auc(table, "macro_f1")
+    auc_bal = compute_label_efficiency_auc(table, "balanced_accuracy")
+    print("Label-efficiency AUC (macro F1):", auc_f1)
+    print("Label-efficiency AUC (balanced accuracy):", auc_bal)
+    with open(os.path.join(RESULTS_DIR, "problem4_auc_summary.json"), "w") as f:
+        json.dump({"macro_f1": auc_f1, "balanced_accuracy": auc_bal}, f, indent=2)
+
+    make_label_efficiency_figure(table, "macro_f1")
+    make_ssl_gain_figure(table)
+    make_class_distribution_figure(data)
+    make_pseudolabel_figures(data)
+    make_confusion_matrices(data)
+
+    # Deduplicate: make_confusion_matrices() re-runs run_main_experiment()
+    # for frac=10%/30% (seed=42) to get predictions for the confusion
+    # matrices, which re-appends identical rows via record_result(). This
+    # was handled as a manual post-processing step during original
+    # development (see course_context/PROBLEM4_REPORT.md) - automated here
+    # so a fresh run doesn't require that extra manual step.
+    dedup_cols = ["task", "city", "seed", "label_fraction", "supervised_or_ssl", "method"]
+    results_df = pd.read_csv(PROBLEM4_RESULTS_PATH)
+    before = len(results_df)
+    results_df = results_df.drop_duplicates(subset=dedup_cols, keep="first")
+    results_df.to_csv(PROBLEM4_RESULTS_PATH, index=False)
+    print(f"Deduplicated results: {before} -> {len(results_df)} rows")
+
+    print("\n" + "=" * 70)
+    print("PROBLEM 4 COMPLETE")
+    print("=" * 70)

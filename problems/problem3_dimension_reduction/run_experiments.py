@@ -688,3 +688,45 @@ def run_pca_mlp_comparison(data: dict, pca_models: dict):
             )
         mean_acc = np.mean([m["balanced_accuracy"] for m in seed_metrics])
         print(f"  {label:10s} + MLP  balanced_acc={mean_acc:.3f} (mean of 3 seeds)")
+
+
+# ---------------------------------------------------------------------------
+# Main orchestration — see the note in problem1's run_experiments.py for
+# why this was missing and how the fix was verified across the project.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("PROBLEM 3 — DIMENSION REDUCTION — FULL PIPELINE")
+    print("=" * 70)
+
+    # This is the exact fix for the FileNotFoundError this project hit on
+    # a fresh run: run_pca_stage() and run_autoencoder_stage() (and
+    # several figure-saving functions below) assume results/problem3/
+    # models/ and figures/problem3/ already exist rather than creating
+    # them. Ensuring this upfront closes that gap for every function
+    # called below, in one place.
+    utils.ensure_dir(RESULTS_DIR)
+    utils.ensure_dir(MODELS_DIR)
+    utils.ensure_dir(FIGURES_DIR)
+
+    data = build_unified_dataset()
+    pca_models = run_pca_stage(data)
+    ae_models = run_autoencoder_stage(data)
+
+    run_downstream_classification(data, pca_models, ae_models)
+    run_downstream_regression(data, pca_models, ae_models)
+
+    make_explained_variance_figure()
+    make_reconstruction_error_figure()
+    make_downstream_comparison_figures()
+    make_2d_scatter_figures(data, pca_models, ae_models)
+    make_tsne_figure(data)
+
+    run_feature_ablation(data)
+    build_comparison_table()
+    run_pca_mlp_comparison(data, pca_models)
+
+    print("\n" + "=" * 70)
+    print("PROBLEM 3 COMPLETE")
+    print("=" * 70)

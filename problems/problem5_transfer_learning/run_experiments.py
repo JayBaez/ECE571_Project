@@ -659,3 +659,48 @@ def make_zero_shot_vs_transfer_figure():
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {path}")
+
+
+# ---------------------------------------------------------------------------
+# Main orchestration — see the note in problem1's run_experiments.py for
+# why this was missing and how the fix was verified across the project.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("PROBLEM 5 — TRANSFER LEARNING — FULL PIPELINE")
+    print("=" * 70)
+
+    # See the matching note in problem1's __main__ block.
+    utils.ensure_dir(RESULTS_DIR)
+    utils.ensure_dir(MODELS_DIR)
+    utils.ensure_dir(FIGURES_DIR)
+
+    data = build_source_and_target_data()
+    utils.ensure_dir(MODELS_DIR)
+
+    pretrained_models = {}
+    for seed in SEEDS:
+        model, history = pretrain_on_source(data["source"], seed=seed)
+        pretrained_models[seed] = model
+        if seed == 42:
+            torch.save(model.state_dict(), os.path.join(MODELS_DIR, "davis_pretrained_model.pt"))
+
+    run_zero_shot(data, pretrained_models)
+
+    for k in K_VALUES:
+        run_few_shot_and_transfer_for_k(data, pretrained_models, k)
+
+    run_freezing_ablation(data, pretrained_models)
+    run_normalization_ablation(data)
+
+    domain_table, city_data = run_domain_shift_analysis()
+    make_domain_shift_figure(city_data)
+    make_transfer_curve_figure()
+    y_pred_fs, y_pred_tr, y_true = make_prediction_vs_truth_figure(data, pretrained_models)
+    make_time_series_figure(data, y_pred_tr)
+    make_zero_shot_vs_transfer_figure()
+
+    print("\n" + "=" * 70)
+    print("PROBLEM 5 COMPLETE")
+    print("=" * 70)
