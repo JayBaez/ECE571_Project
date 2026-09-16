@@ -771,6 +771,32 @@ def search_gru_hyperparameters(data: dict, search_seed: int = 42) -> dict:
     return best_params
 
 
+def run_gru_tuned_evaluation(data: dict, city: str, best_params: dict):
+    """
+    The missing piece between search_gru_hyperparameters() (which only
+    finds the best config) and a recorded "gru_tuned" result: retrain
+    the GRU at all 3 seeds using the tuned hyperparameters, evaluated
+    on the real test set, and record each result - same pattern as
+    every other "_tuned" model in this file (see run_tuned_final_
+    evaluation() for random_forest/gradient_boosting/mlp).
+
+    This function was missing from the original script (the tuned GRU
+    results in results/problem2/problem2_results.csv were produced by
+    an equivalent one-off snippet during development that was never
+    saved back into this file) - added here so the full pipeline is
+    genuinely reproducible end-to-end from this script alone.
+    """
+    print(f"  --- gru_tuned: {city} ---")
+    for seed in SEEDS:
+        metrics, y_pred, model, history = run_gru_experiment(data, seed, max_epochs=60, patience=8, **best_params)
+        record_result(
+            "sequence", city, "gru_tuned", "neural_network", seed, metrics,
+            source_city=city, feature_set=f"k={sequence.K_STEPS}_window",
+            notes=json.dumps(best_params),
+        )
+        print(f"  seed={seed} gru_tuned  rmse={metrics['rmse']:.2f} nrmse={metrics['nrmse']:.4f} r2={metrics['r2']:.3f} (epochs={len(history['epoch'])})")
+
+
 # ---------------------------------------------------------------------------
 # Stage 7: learning curve
 # ---------------------------------------------------------------------------
@@ -986,3 +1012,54 @@ def make_learning_curve_figure(curve_df: pd.DataFrame):
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {path}")
+
+
+# ---------------------------------------------------------------------------
+# Main orchestration — see the note at the top of problem1's run_experiments.py
+# for why this was missing and how it was verified. This block follows the
+# same pattern, built from this file's own module docstring and function
+# signatures. Verified via a partial run (Stage 1, Davis) matching the
+# saved results exactly; NOT verified to full completion end-to-end in one
+# sitting, since a complete run exceeds a single command's time budget in
+# the sandbox this was built in - see course_context/PROBLEM2_REPORT.md.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("PROBLEM 2 — SUPERVISED REGRESSION — FULL PIPELINE")
+    print("=" * 70)
+
+    # Stage 1-3: same-city sweep, hyperparameter search, tuned eval (per city)
+    for city in SAME_CITY_CITIES:
+        run_same_city_sweep(city)
+        tuned = run_hyperparameter_search(city)
+        utils.ensure_dir(RESULTS_DIR)
+        with open(os.path.join(RESULTS_DIR, f"hyperparameter_search_results_{city}.json"), "w") as f:
+            json.dump(tuned, f, indent=2)
+        run_tuned_final_evaluation(city, tuned)
+
+    # Stage 4: cross-city zero-shot (Davis -> Huron/Santa Barbara/La Jolla)
+    run_cross_city_zero_shot()
+
+    # Stage 5: 3yr vs 6yr ablation (Davis)
+    run_3yr_vs_6yr_ablation()
+
+    # Stage 6: sequence forecasting (GRU vs. persistence, Davis)
+    run_sequence_experiments()
+    seq_data = build_sequence_dataset(SOURCE_CITY)
+    gru_best_params = search_gru_hyperparameters(seq_data)
+    run_gru_tuned_evaluation(seq_data, SOURCE_CITY, gru_best_params)
+
+    # Stage 7-8: learning curve, error analysis, best-model figures (Davis)
+    curve_df = run_learning_curve()
+    analyze_best_same_city_model()
+
+    # Summary figures
+    make_model_comparison_figure()
+    make_cross_city_comparison_figure()
+    make_sequence_comparison_figure()
+    make_learning_curve_figure(curve_df)
+
+    print("\n" + "=" * 70)
+    print("PROBLEM 2 COMPLETE")
+    print("=" * 70)
