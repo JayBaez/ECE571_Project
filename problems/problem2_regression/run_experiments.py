@@ -1029,6 +1029,14 @@ if __name__ == "__main__":
     print("PROBLEM 2 — SUPERVISED REGRESSION — FULL PIPELINE")
     print("=" * 70)
 
+    # See the matching note in problem1's __main__ block - several save
+    # calls throughout this file assume their target directory already
+    # exists rather than creating it. Ensuring this upfront closes that
+    # gap for every function called below, in one place.
+    utils.ensure_dir(RESULTS_DIR)
+    utils.ensure_dir(MODELS_DIR)
+    utils.ensure_dir(FIGURES_DIR)
+
     # Stage 1-3: same-city sweep, hyperparameter search, tuned eval (per city)
     for city in SAME_CITY_CITIES:
         run_same_city_sweep(city)
