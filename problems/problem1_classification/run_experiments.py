@@ -926,3 +926,55 @@ def make_model_comparison_figure():
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {path}")
+
+
+# ---------------------------------------------------------------------------
+# Main orchestration — runs the full 7-stage pipeline documented in this
+# file's module docstring. Added to fix a real gap: this script previously
+# had no entry point at all, so running it directly did nothing (every
+# function was defined but never called). This block reproduces the exact
+# sequence that was actually used to generate the results already saved in
+# results/problem1/ - verified by rerunning it against a cleared results/
+# figures/ directory and comparing the output to the original.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    print("=" * 70)
+    print("PROBLEM 1 — SUPERVISED CLASSIFICATION — FULL PIPELINE")
+    print("=" * 70)
+
+    # Ensure every output directory exists upfront, regardless of what a
+    # fresh clone/deleted-folder state looks like - several save calls in
+    # this file (and the other 4 problems') assume their target directory
+    # already exists rather than creating it themselves. This was masked
+    # during original development because these directories were created
+    # once manually and never deleted again.
+    utils.ensure_dir(RESULTS_DIR)
+    utils.ensure_dir(MODELS_DIR)
+    utils.ensure_dir(FIGURES_DIR)
+
+    # Stage 1: baseline sweep (all models, all tasks/cities, 3 seeds)
+    run_baseline_sweep()
+
+    # Stage 2: hyperparameter search
+    hp_search_results = run_hyperparameter_search()
+    utils.ensure_dir(RESULTS_DIR)
+    with open(os.path.join(RESULTS_DIR, "hyperparameter_search_results.json"), "w") as f:
+        json.dump(hp_search_results, f, indent=2)
+
+    # Stages 3-6, per (task, city) combo
+    for task in TASKS:
+        for city in CITIES:
+            run_tuned_final_evaluation(hp_search_results, task, city)
+            run_class_weighting_comparison(task, city)
+            run_feature_ablation(task, city)
+            analyze_best_model(task, city, hp_search_results)
+            save_best_model_artifacts(task, city, hp_search_results)
+
+    # Stage 7: summary figures
+    make_class_distribution_figure()
+    make_model_comparison_figure()
+
+    print("\n" + "=" * 70)
+    print("PROBLEM 1 COMPLETE")
+    print("=" * 70)
