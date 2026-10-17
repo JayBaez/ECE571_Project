@@ -46,16 +46,9 @@ required metrics, and known risks, is in
 five; `course_context/CLAIMS_TO_AVOID.md` lists conclusions the
 experiments do NOT support.
 
-## 3. Current project status
 
-**All 5 ML problems are COMPLETE, audited (Phase 9), and
-reproducible** — 5 representative experiments (one per problem) were
-independently rerun during the Phase 9 audit and matched saved results
-exactly. The final written report and presentation have not yet been
-created. See `course_context/PROJECT_STATUS.md` for the detailed
-tracker.
 
-## 4. Repository structure
+## 3. Repository structure
 
 ```
 .
@@ -87,7 +80,7 @@ tracker.
 └── .gitignore
 ```
 
-## 5. Framework architecture
+## 4. Framework architecture
 
 The pipeline flows one direction, and every "fit" step only ever sees
 training data — this is the shared foundation every one of the 5
@@ -134,7 +127,7 @@ P5's transfer MLP) with zero changes to the shared training loop.
   (e.g. `GHI` when predicting the sky-condition label derived from it)
   are deliberately excluded, not accidentally included.
 
-## 6. How to create/install the Python environment
+## 5. How to create/install the Python environment
 
 Recommended Python version: 3.11 or 3.12.
 
@@ -157,7 +150,7 @@ project was developed and validated on CPU (no GPU in the development
 sandbox) — `src/utils.py`'s `get_device()` will automatically switch
 to CUDA with no code changes once you run it on a CUDA-capable machine.
 
-## 7. How to verify the installation
+## 6. How to verify the installation
 
 ```bash
 python scripts/check_setup.py
@@ -168,7 +161,7 @@ dataset can be found and opened, a sheet can be loaded, random seeds
 are reproducible, and GPU detection runs — without training any model.
 Every check should print `[PASS]` (7/7).
 
-## 8. How to run the test suite
+## 7. How to run the test suite
 
 ```bash
 pip install -r requirements-dev.txt
@@ -184,7 +177,7 @@ leaderboard system, and the PyTorch training loop (loss decreasing,
 early stopping, and the classification `y_dtype` support added during
 Problem 1).
 
-## 9. How to run each problem
+## 8. How to run each problem
 
 Each problem's experiments are driven from its own
 `run_experiments.py`, which imports shared functions from `src/` and
@@ -212,7 +205,7 @@ top-to-bottom on your own machine is expected to work but may take
 longer in a single sitting than the individual functions did when run
 separately.
 
-## 10. Where results are stored
+## 9. Where results are stored
 
 - `results/problemN/problemN_results.csv` — every experiment for that
   problem, one row per (model, seed, ...) — never overwritten, only
@@ -229,7 +222,7 @@ separately.
   every problem, queryable via `src/experiment_runner.py`'s
   `get_leaderboard()`.
 
-## 11. Where figures are stored
+## 10. Where figures are stored
 
 `figures/problemN/` (one subfolder per problem) and `figures/eda/`
 (Phase 3 exploratory analysis). `course_context/
@@ -237,7 +230,7 @@ FINAL_FIGURE_INVENTORY.md` (Phase 9) catalogs every figure across the
 whole project with a MUST INCLUDE / OPTIONAL recommendation for the
 final report.
 
-## 12. Reproducibility information
+## 11. Reproducibility information
 
 See `course_context/REPRODUCIBILITY_CHECKLIST.md` (Phase 9) for the
 full checklist. In brief: fixed seeds `[42, 123, 2026]` used
@@ -247,7 +240,7 @@ hyperparameter search result is saved; 5 representative experiments
 (one per problem) were independently rerun during the Phase 9 audit
 and matched saved results exactly.
 
-## 13. Using Git/GitHub Desktop
+## 12. Using Git/GitHub Desktop
 
 This repo is managed with GitHub Desktop. After AI-assisted changes
 (Claude Code or otherwise) are made to the repository, review the diff
