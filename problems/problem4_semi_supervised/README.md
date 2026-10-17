@@ -1,18 +1,19 @@
-# Problem 4 — Semi-Supervised Learning
+# Problem 4: Semi-Supervised Learning
 
-**Status: NOT STARTED.**
+Hides most of Davis's sky-condition labels (only 10%, 30%, or 50% stay labeled) and tests whether pseudo-labeling beats training on the labeled subset alone. Uses Problem 1's exact chronological train/test split.
 
-This folder will eventually contain the code for Problem 4: comparing
-a supervised-only baseline against a semi-supervised method at
-labeled fractions of 10%/30%/50%.
+## Files
+- `pseudo_labeling.py`: self-training: train on the labeled subset, add confident predictions on the unlabeled pool as pseudo-labels, repeat.
+- `run_experiments.py`: supervised baseline vs. pseudo-labeling at each label fraction and seed, label-efficiency curve, pseudo-label accuracy analysis, and an optional Label Spreading comparison.
 
-Before writing any code here, read:
-- `course_context/TEACHER_EXPECTATIONS.md` (Problem 4 section) - note
-  the SSL algorithm choice is still an open decision (course-taught
-  methods vs. pseudo-labeling).
-- `course_context/EXPERIMENT_PLAN.md` (Problem 4 section).
+## Run
+```bash
+python problems/problem4_semi_supervised/run_experiments.py
+```
+Run from the repo root. The raw dataset is not stored in the repo: place `Further Consolidated Data, HnL.xlsx` at `course/Further Consolidated Data, HnL.xlsx` first.
 
-Use `src/splitting.py`'s `random_labeled_subset()` for the
-labeled/unlabeled split - it's built specifically for this and keeps
-the split's randomness separate from the chronological train/test
-split.
+## Output
+`results/problem4/` and `figures/problem4/`.
+
+## Headline result
+Semi-supervised gain was slightly negative at every label fraction. The pseudo-labels were accurate, but about 98% of the first round were the easy "Clear" class, so they added little new information.

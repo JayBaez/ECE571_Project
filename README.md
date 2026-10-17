@@ -5,57 +5,52 @@
 This project uses a real-world solar irradiance and photovoltaic (PV)
 output dataset covering 5 cities (Amherst MA, Davis CA, Huron SD,
 Santa Barbara CA, La Jolla CA) to explore five machine learning
-paradigms. The dataset is profiled in `course_context/DATASET_PROFILE.md`
-and `course_context/EDA_REPORT.md`. The final write-up is
-`report/FINAL_REPORT.md` (also exported as `report/FINAL_REPORT.docx`),
-and the accompanying slide deck is
-`presentation/PV_ML_Final_Presentation.pptx`.
+paradigms. The dataset is profiled in `course_context/DATASET_PROFILE.md`.
+The final write-up is `report/FINAL_REPORT.docx`, and the accompanying
+slide deck is `presentation/PV_ML_Final_Presentation.pptx` (a narrated
+version is `presentation/PV_ML_Final_Presentation_Voice_Over.mp4`).
 
-
+**Dataset not included.** The raw Excel workbook is not stored in this
+repo. Before running anything, place it at
+`course/Further Consolidated Data, HnL.xlsx` (path relative to the repo
+root, set by `DEFAULT_DATA_PATH` in `src/data_loader.py`).
 
 ## 2. The five problems
 
 1. **Supervised Classification** (`problems/problem1_classification/`)
    — sky-condition and generation-regime classifiers. Best result:
-   0.77-0.95 balanced accuracy depending on task/city. See
-   `course_context/PROBLEM1_REPORT.md`.
+   0.77-0.95 balanced accuracy depending on task/city.
 2. **Supervised Regression** (`problems/problem2_regression/`, core
    task) — same-city, cross-city, and K=12 sequence forecasting of
-   Output Power. Best result: RMSE=15.17 kW (Davis, same-city). See
-   `course_context/PROBLEM2_REPORT.md`.
+   Output Power. Best result: RMSE=15.17 kW (Davis, same-city).
 3. **Dimension Reduction** (`problems/problem3_dimension_reduction/`)
    — PCA and an autoencoder at d=2/5/10, compared against raw features
    on both downstream tasks. Finding: raw features won at every
-   dimension. See `course_context/PROBLEM3_REPORT.md`.
+   dimension.
 4. **Semi-Supervised Learning** (`problems/problem4_semi_supervised/`)
    — pseudo-labeling and Label Spreading at 10%/30%/50% labels.
    Finding: SSL gain was slightly negative at every fraction (with a
-   clear, evidence-based explanation). See
-   `course_context/PROBLEM4_REPORT.md`.
+   clear, evidence-based explanation).
 5. **Transfer Learning** (`problems/problem5_transfer_learning/`) —
    Davis→Amherst zero-shot/few-shot/transfer for Output Power. Finding:
    transfer beat few-shot at every k, most strongly at k=10 (+21.4%
-   RMSE). See `course_context/PROBLEM5_REPORT.md`.
+   RMSE).
 
-Full detail on each problem, including exact label definitions,
-feature exclusions, and known risks, is in each problem's own
-`PROBLEMN_REPORT.md` above, plus `course_context/LEAKAGE_MAP.md`
-(which features are safe vs. off-limits for each target) and
-`course_context/ML_METHOD_MAP.md` (which course-taught methods map to
-which problem).
-
-
+Each problem folder has its own `README.md` (files, how to run, outputs,
+headline result). Full detail on methods and results is in
+`report/FINAL_REPORT.docx`. `course_context/LEAKAGE_MAP.md` lists which
+features are safe vs. off-limits for each target, and
+`course_context/ML_METHOD_MAP.md` maps course-taught methods to problems.
 
 ## 3. Repository structure
 
 ```
 .
-├── course/                  Course PowerPoints/PDFs + the raw Excel dataset
-├── course_context/          Working notes: DATASET_PROFILE.md, EDA_REPORT.md,
-│                             LEAKAGE_MAP.md, ML_METHOD_MAP.md, and the 5
-│                             PROBLEMN_REPORT.md files
-├── report/                  FINAL_REPORT.md / .docx — the final written report
-├── presentation/            PV_ML_Final_Presentation.pptx — the final slide deck
+├── course/                  NOT in the repo: put the raw Excel dataset here
+├── course_context/          Working notes: DATASET_PROFILE.md, LEAKAGE_MAP.md,
+│                             ML_METHOD_MAP.md
+├── report/                  FINAL_REPORT.docx — the final written report
+├── presentation/            Final slide deck (.pptx) and narrated version (.mp4)
 ├── src/                     Reusable framework code (see Architecture below)
 ├── problems/                One folder per problem, each with its own
 │   ├── problem1_classification/     features.py, models.py, targets.py, run_experiments.py
@@ -71,8 +66,7 @@ which problem).
 ├── figures/                 Saved plots, one subfolder per problem (+ eda/)
 ├── scripts/
 │   ├── check_setup.py       Environment/framework validation script
-│   ├── run_eda.py           Exploratory data analysis script
-│   └── framework_demo.py    Tiny synthetic-data pipeline demo (NOT a project result)
+│   └── run_eda.py           Exploratory data analysis script
 ├── tests/                   Unit tests for every src/ module (pytest) — 81 tests
 ├── requirements.txt
 ├── requirements-dev.txt     Extra packages needed only to run the test suite
@@ -159,7 +153,8 @@ python scripts/check_setup.py
 Checks that all packages import, all `src/` modules import, the Excel
 dataset can be found and opened, a sheet can be loaded, random seeds
 are reproducible, and GPU detection runs — without training any model.
-Every check should print `[PASS]` (7/7).
+Every check should print `[PASS]` (7/7); the dataset checks need the Excel
+file in `course/` (see Section 1).
 
 ## 7. How to run the test suite
 
@@ -194,8 +189,6 @@ python problems/problem4_semi_supervised/run_experiments.py
 python problems/problem5_transfer_learning/run_experiments.py
 ```
 
-
-
 ## 9. Where results are stored
 
 - `results/problemN/problemN_results.csv` — every experiment for that
@@ -217,7 +210,7 @@ python problems/problem5_transfer_learning/run_experiments.py
 
 `figures/problemN/` (one subfolder per problem) and `figures/eda/`
 (exploratory analysis). The subset actually used in the final report
-and presentation is referenced by path from `report/FINAL_REPORT.md`.
+and presentation is shown in `report/FINAL_REPORT.docx` and the slides.
 
 ## 11. Reproducibility information
 
