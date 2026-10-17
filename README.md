@@ -5,14 +5,15 @@
 This project uses a real-world solar irradiance and photovoltaic (PV)
 output dataset covering 5 cities (Amherst MA, Davis CA, Huron SD,
 Santa Barbara CA, La Jolla CA) to explore five machine learning
-paradigms. The dataset and full project spec are summarized in
-`course_context/` — see especially `TEACHER_EXPECTATIONS.md` for the
-exact requirements/grading rubric and `PROJECT_STORY.md` for a concise
-summary of what was found.
+paradigms. The dataset is profiled in `course_context/DATASET_PROFILE.md`
+and `course_context/EDA_REPORT.md`. The final write-up is
+`report/FINAL_REPORT.md` (also exported as `report/FINAL_REPORT.docx`),
+and the accompanying slide deck is
+`presentation/PV_ML_Final_Presentation.pptx`.
 
-**All five required ML problems are complete.** See
-`course_context/PROJECT_STATUS.md` for the up-to-date tracker and
-`results/BEST_RESULTS.md` for the headline result of each problem.
+**All five required ML problems are complete, and the final report and
+presentation are done.** See `results/BEST_RESULTS.md` for the
+headline result of each problem.
 
 ## 2. The five problems (all complete)
 
@@ -39,22 +40,32 @@ summary of what was found.
    RMSE). See `course_context/PROBLEM5_REPORT.md`.
 
 Full detail on each problem, including exact label definitions,
-required metrics, and known risks, is in
-`course_context/TEACHER_EXPECTATIONS.md` and
-`course_context/EXPERIMENT_PLAN.md`. `course_context/FINAL_AUDIT.md`
-(Phase 9) documents a full leakage/reproducibility audit across all
-five; `course_context/CLAIMS_TO_AVOID.md` lists conclusions the
-experiments do NOT support.
+feature exclusions, and known risks, is in each problem's own
+`PROBLEMN_REPORT.md` above, plus `course_context/LEAKAGE_MAP.md`
+(which features are safe vs. off-limits for each target) and
+`course_context/ML_METHOD_MAP.md` (which course-taught methods map to
+which problem).
 
+## 3. Current project status
 
+**All 5 ML problems are complete, and the final report
+(`report/FINAL_REPORT.md` / `.docx`) and presentation
+(`presentation/PV_ML_Final_Presentation.pptx`) are done.** Every
+preprocessing/scaling step is fit on training data only (see
+`src/preprocessing.py` and the corresponding tests in `tests/`), and
+every problem uses the same fixed seeds (`src/utils.py`'s
+`DEFAULT_SEEDS = [42, 123, 2026]`) for reproducibility.
 
-## 3. Repository structure
+## 4. Repository structure
 
 ```
 .
 ├── course/                  Course PowerPoints/PDFs + the raw Excel dataset
-├── course_context/          Knowledge base — READ THIS FIRST, especially
-│                             PROJECT_STORY.md and the 5 PROBLEMN_REPORT.md files
+├── course_context/          Working notes: DATASET_PROFILE.md, EDA_REPORT.md,
+│                             LEAKAGE_MAP.md, ML_METHOD_MAP.md, and the 5
+│                             PROBLEMN_REPORT.md files
+├── report/                  FINAL_REPORT.md / .docx — the final written report
+├── presentation/            PV_ML_Final_Presentation.pptx — the final slide deck
 ├── src/                     Reusable framework code (see Architecture below)
 ├── problems/                One folder per problem, each with its own
 │   ├── problem1_classification/     features.py, models.py, targets.py, run_experiments.py
@@ -68,10 +79,9 @@ experiments do NOT support.
 │   ├── FINAL_RESULTS.csv/.json      same data, alternate format
 │   └── BEST_RESULTS.md              headline result + justification, per problem
 ├── figures/                 Saved plots, one subfolder per problem (+ eda/)
-├── configs/                 YAML experiment configs
 ├── scripts/
 │   ├── check_setup.py       Environment/framework validation script
-│   ├── run_eda.py           Phase 3 exploratory data analysis script
+│   ├── run_eda.py           Exploratory data analysis script
 │   └── framework_demo.py    Tiny synthetic-data pipeline demo (NOT a project result)
 ├── tests/                   Unit tests for every src/ module (pytest) — 81 tests
 ├── requirements.txt
@@ -80,7 +90,7 @@ experiments do NOT support.
 └── .gitignore
 ```
 
-## 4. Framework architecture
+## 5. Framework architecture
 
 The pipeline flows one direction, and every "fit" step only ever sees
 training data — this is the shared foundation every one of the 5
@@ -116,8 +126,8 @@ each problem defines — proven across 5 different network architectures
 (P1's classifier MLP, P2's regressor MLP and GRU, P3's autoencoder,
 P5's transfer MLP) with zero changes to the shared training loop.
 
-**Leakage protection, concretely (audited in full in
-`course_context/FINAL_AUDIT.md`, Section 8):**
+**Leakage protection, concretely (see `course_context/LEAKAGE_MAP.md`
+for the full per-problem breakdown):**
 - Preprocessing: `fit_*()` functions take a training DataFrame only;
   `apply_*()` functions take an already-fitted object.
 - Splitting: `chronological_split()` never shuffles and returns
@@ -127,7 +137,7 @@ P5's transfer MLP) with zero changes to the shared training loop.
   (e.g. `GHI` when predicting the sky-condition label derived from it)
   are deliberately excluded, not accidentally included.
 
-## 5. How to create/install the Python environment
+## 6. How to create/install the Python environment
 
 Recommended Python version: 3.11 or 3.12.
 
@@ -150,7 +160,7 @@ project was developed and validated on CPU (no GPU in the development
 sandbox) — `src/utils.py`'s `get_device()` will automatically switch
 to CUDA with no code changes once you run it on a CUDA-capable machine.
 
-## 6. How to verify the installation
+## 7. How to verify the installation
 
 ```bash
 python scripts/check_setup.py
@@ -161,7 +171,7 @@ dataset can be found and opened, a sheet can be loaded, random seeds
 are reproducible, and GPU detection runs — without training any model.
 Every check should print `[PASS]` (7/7).
 
-## 7. How to run the test suite
+## 8. How to run the test suite
 
 ```bash
 pip install -r requirements-dev.txt
@@ -177,7 +187,7 @@ leaderboard system, and the PyTorch training loop (loss decreasing,
 early stopping, and the classification `y_dtype` support added during
 Problem 1).
 
-## 8. How to run each problem
+## 9. How to run each problem
 
 Each problem's experiments are driven from its own
 `run_experiments.py`, which imports shared functions from `src/` and
@@ -197,15 +207,12 @@ python problems/problem5_transfer_learning/run_experiments.py
 **Note:** during development, each script's stages were run as several
 smaller invocations (rather than one continuous run) to stay within
 the development sandbox's per-command execution-time limit — this is
-documented in each problem's own report and does not affect result
-validity (Phase 9's audit independently reran one representative
-experiment per problem and matched saved results exactly — see
-`course_context/FINAL_AUDIT.md`, Section 10). Running the full script
-top-to-bottom on your own machine is expected to work but may take
-longer in a single sitting than the individual functions did when run
-separately.
+documented in each problem's own `PROBLEMN_REPORT.md` and does not
+affect result validity. Running the full script top-to-bottom on your
+own machine is expected to work but may take longer in a single
+sitting than the individual functions did when run separately.
 
-## 9. Where results are stored
+## 10. Where results are stored
 
 - `results/problemN/problemN_results.csv` — every experiment for that
   problem, one row per (model, seed, ...) — never overwritten, only
@@ -214,38 +221,37 @@ separately.
   scikit-learn, `.pt` for PyTorch state dicts) and preprocessing
   objects, all verified loadable.
 - `results/FINAL_EXPERIMENT_TABLE.csv` / `FINAL_RESULTS.csv` /
-  `FINAL_RESULTS.json` — one master table spanning all 5 problems
-  (Phase 9), ready to use directly when writing the final report.
+  `FINAL_RESULTS.json` — one master table spanning all 5 problems,
+  the source data for the final report's tables.
 - `results/BEST_RESULTS.md` — the selected headline result for each
   problem, with justification.
 - `results/experiment_history.csv` — every experiment ever run across
   every problem, queryable via `src/experiment_runner.py`'s
   `get_leaderboard()`.
 
-## 10. Where figures are stored
+## 11. Where figures are stored
 
 `figures/problemN/` (one subfolder per problem) and `figures/eda/`
-(Phase 3 exploratory analysis). `course_context/
-FINAL_FIGURE_INVENTORY.md` (Phase 9) catalogs every figure across the
-whole project with a MUST INCLUDE / OPTIONAL recommendation for the
-final report.
+(exploratory analysis). The subset actually used in the final report
+and presentation is referenced by path from `report/FINAL_REPORT.md`.
 
-## 11. Reproducibility information
+## 12. Reproducibility information
 
-See `course_context/REPRODUCIBILITY_CHECKLIST.md` (Phase 9) for the
-full checklist. In brief: fixed seeds `[42, 123, 2026]` used
-identically across every problem; every preprocessing/scaling step is
-fit on training data only (audited, `FINAL_AUDIT.md` Section 8); every
-hyperparameter search result is saved; 5 representative experiments
-(one per problem) were independently rerun during the Phase 9 audit
-and matched saved results exactly.
+Fixed seeds `[42, 123, 2026]` (`src/utils.py`'s `DEFAULT_SEEDS`) are
+used identically across every problem. Every preprocessing/scaling
+step is fit on training data only — enforced by the
+`fit_*()`/`apply_*()` split in `src/preprocessing.py` and checked
+directly in `tests/test_preprocessing.py`. Every hyperparameter search
+result is saved into its problem's `results/problemN/` folder (e.g.
+`hyperparameter_search_results_<city>.json`).
 
-## 12. Using Git/GitHub Desktop
+## 13. Using Git/GitHub Desktop
 
 This repo is managed with GitHub Desktop. After AI-assisted changes
 (Claude Code or otherwise) are made to the repository, review the diff
 in GitHub Desktop before committing — that's the right point to catch
 anything you don't understand or agree with. Commit messages should
-briefly describe what phase/problem the change belongs to. AI agents
-working in this repo are instructed not to commit or push on their
-own — see `course_context/AI_AGENT_INSTRUCTIONS.md`.
+briefly describe what part of the project the change belongs to. AI
+agents working in this repo do not have push access to the remote and
+commit locally only; changes are reviewed and pushed by hand through
+GitHub Desktop.
