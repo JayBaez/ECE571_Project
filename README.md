@@ -11,11 +11,9 @@ and `course_context/EDA_REPORT.md`. The final write-up is
 and the accompanying slide deck is
 `presentation/PV_ML_Final_Presentation.pptx`.
 
-**All five required ML problems are complete, and the final report and
-presentation are done.** See `results/BEST_RESULTS.md` for the
-headline result of each problem.
 
-## 2. The five problems (all complete)
+
+## 2. The five problems
 
 1. **Supervised Classification** (`problems/problem1_classification/`)
    — sky-condition and generation-regime classifiers. Best result:
@@ -46,17 +44,9 @@ feature exclusions, and known risks, is in each problem's own
 `course_context/ML_METHOD_MAP.md` (which course-taught methods map to
 which problem).
 
-## 3. Current project status
 
-**All 5 ML problems are complete, and the final report
-(`report/FINAL_REPORT.md` / `.docx`) and presentation
-(`presentation/PV_ML_Final_Presentation.pptx`) are done.** Every
-preprocessing/scaling step is fit on training data only (see
-`src/preprocessing.py` and the corresponding tests in `tests/`), and
-every problem uses the same fixed seeds (`src/utils.py`'s
-`DEFAULT_SEEDS = [42, 123, 2026]`) for reproducibility.
 
-## 4. Repository structure
+## 3. Repository structure
 
 ```
 .
@@ -90,7 +80,7 @@ every problem uses the same fixed seeds (`src/utils.py`'s
 └── .gitignore
 ```
 
-## 5. Framework architecture
+## 4. Framework architecture
 
 The pipeline flows one direction, and every "fit" step only ever sees
 training data — this is the shared foundation every one of the 5
@@ -137,7 +127,7 @@ for the full per-problem breakdown):**
   (e.g. `GHI` when predicting the sky-condition label derived from it)
   are deliberately excluded, not accidentally included.
 
-## 6. How to create/install the Python environment
+## 5. How to create/install the Python environment
 
 Recommended Python version: 3.11 or 3.12.
 
@@ -160,7 +150,7 @@ project was developed and validated on CPU (no GPU in the development
 sandbox) — `src/utils.py`'s `get_device()` will automatically switch
 to CUDA with no code changes once you run it on a CUDA-capable machine.
 
-## 7. How to verify the installation
+## 6. How to verify the installation
 
 ```bash
 python scripts/check_setup.py
@@ -171,7 +161,7 @@ dataset can be found and opened, a sheet can be loaded, random seeds
 are reproducible, and GPU detection runs — without training any model.
 Every check should print `[PASS]` (7/7).
 
-## 8. How to run the test suite
+## 7. How to run the test suite
 
 ```bash
 pip install -r requirements-dev.txt
@@ -187,7 +177,7 @@ leaderboard system, and the PyTorch training loop (loss decreasing,
 early stopping, and the classification `y_dtype` support added during
 Problem 1).
 
-## 9. How to run each problem
+## 8. How to run each problem
 
 Each problem's experiments are driven from its own
 `run_experiments.py`, which imports shared functions from `src/` and
@@ -204,15 +194,9 @@ python problems/problem4_semi_supervised/run_experiments.py
 python problems/problem5_transfer_learning/run_experiments.py
 ```
 
-**Note:** during development, each script's stages were run as several
-smaller invocations (rather than one continuous run) to stay within
-the development sandbox's per-command execution-time limit — this is
-documented in each problem's own `PROBLEMN_REPORT.md` and does not
-affect result validity. Running the full script top-to-bottom on your
-own machine is expected to work but may take longer in a single
-sitting than the individual functions did when run separately.
 
-## 10. Where results are stored
+
+## 9. Where results are stored
 
 - `results/problemN/problemN_results.csv` — every experiment for that
   problem, one row per (model, seed, ...) — never overwritten, only
@@ -229,13 +213,13 @@ sitting than the individual functions did when run separately.
   every problem, queryable via `src/experiment_runner.py`'s
   `get_leaderboard()`.
 
-## 11. Where figures are stored
+## 10. Where figures are stored
 
 `figures/problemN/` (one subfolder per problem) and `figures/eda/`
 (exploratory analysis). The subset actually used in the final report
 and presentation is referenced by path from `report/FINAL_REPORT.md`.
 
-## 12. Reproducibility information
+## 11. Reproducibility information
 
 Fixed seeds `[42, 123, 2026]` (`src/utils.py`'s `DEFAULT_SEEDS`) are
 used identically across every problem. Every preprocessing/scaling
@@ -245,13 +229,3 @@ directly in `tests/test_preprocessing.py`. Every hyperparameter search
 result is saved into its problem's `results/problemN/` folder (e.g.
 `hyperparameter_search_results_<city>.json`).
 
-## 13. Using Git/GitHub Desktop
-
-This repo is managed with GitHub Desktop. After AI-assisted changes
-(Claude Code or otherwise) are made to the repository, review the diff
-in GitHub Desktop before committing — that's the right point to catch
-anything you don't understand or agree with. Commit messages should
-briefly describe what part of the project the change belongs to. AI
-agents working in this repo do not have push access to the remote and
-commit locally only; changes are reviewed and pushed by hand through
-GitHub Desktop.
